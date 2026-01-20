@@ -1,3 +1,17 @@
+# constitution
+
+```
+/speckit.constitution
+Design the constitution around the following:
+
+- Purpose: Learn how to build agentic applications and explore their use in observability.
+- Minimalism: Implement only core functionality; no insights or autonomous actions.
+- Extensibility: Establish a safe foundation for future expansion.
+- Accuracy & Clarity: Outputs must reflect real data and be easy to understand.
+- Testing: Ensure to add tests before making changes. We need to all previous tests pass before we move on to add extra code, features.
+
+```
+
 # specify
 
 ```
