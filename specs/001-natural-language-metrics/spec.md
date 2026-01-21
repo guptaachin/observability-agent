@@ -142,3 +142,12 @@ When an engineer asks a question that cannot be fulfilled, the system should pro
 - Persistent conversation state or context memory
 - Visualization of metrics (charts, graphs)
 - Data exploration or ad-hoc analysis beyond simple metric queries
+
+## Clarifications
+
+### Session 2026-01-21
+
+- **Q: Should the system use direct Grafana HTTP API or Grafana MCP server for metrics retrieval?**
+  - **A: Must use Grafana MCP server** to demonstrate MCP server integration patterns and showcase Model Context Protocol usage with agentic applications. This is a core learning objective for the project.
+  - **Implication**: The agent will invoke the Grafana MCP server as a tool, following the LangChain tool pattern. The MCP server will handle all Grafana API communication internally.
+  - **Updated requirement**: FR-004 refined to specify "via Grafana MCP server" instead of generic "observability system"

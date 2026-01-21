@@ -5,7 +5,7 @@
 
 ## Summary
 
-Enable engineers to query system metrics using plain English by implementing a minimal, end-to-end agent workflow that translates natural language into metric queries and returns readable results. The implementation uses a single-node LangGraph agent with LangChain for language model integration and Gradio for the user interface, communicating with the existing Grafana MCP server for metric retrieval.
+Enable engineers to query system metrics using plain English by implementing a minimal, end-to-end agent workflow that translates natural language into metric queries and returns readable results. The implementation uses a single-node LangGraph agent with LangChain for language model integration and Gradio for the user interface, communicating with the **Grafana MCP server** for metric retrieval to demonstrate MCP integration patterns.
 
 ## Technical Context
 

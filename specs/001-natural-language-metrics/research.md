@@ -110,83 +110,135 @@ def query_grafana_metrics(
 
 ---
 
-## 3. Grafana Integration Architecture
+## 3. Grafana Integration Architecture (CLARIFIED)
 
-### Decision
-Use direct HTTP API integration to Grafana, NOT the MCP server pattern. The Grafana MCP server is for *exposing* your services, not for consuming external APIs.
+### Decision (CLARIFIED)
+**Use Grafana MCP server as a tool called by the agent.** The MCP server exposes Grafana metrics querying capabilities, and the agent invokes it as a LangChain tool.
 
-### Rationale
-- **Clarity of Pattern**: HTTP API directly calls Grafana; MCP is for exposing your agent to other systems
-- **Control**: Direct API integration provides full control over query parameters and response handling
-- **Simplicity**: No need to run MCP server separately; one fewer component to manage
-- **Debugging**: Easier to debug HTTP requests than MCP protocol issues
+### Important Clarification (CRITICAL)
+The requirement has been clarified: **Must use Grafana MCP server** to demonstrate MCP integration patterns in agentic applications. This is a core learning objective.
 
-### Important Clarification
-The existing `mcp/grafana` Docker container mentioned in constraints is intended as a reference for Grafana MCP server *implementation*. For this agent, we call Grafana's HTTP API directly using the same credentials:
+**Pattern Explanation**:
+- Your agent (via LangChain tool) calls the Grafana MCP server
+- The MCP server runs in Docker and handles all Grafana API communication
+- The agent doesn't directly call Grafana HTTP API; it goes through MCP
+- This showcases the MCP pattern: exposing capabilities as tools
+
+### Architecture
+
+```
+┌─────────────────────────────────────────┐
+│     Agent (LangGraph + LangChain)       │
+│                                         │
+│  @tool query_grafana_metrics()          │
+│    └─ Calls MCP server                  │
+└─────────────────┬───────────────────────┘
+                  │
+                  ▼
+         ┌────────────────────┐
+         │  Grafana MCP       │
+         │  Server (Docker)   │
+         │                    │
+         │  Exposes:          │
+         │  - query_metrics   │
+         │  - get_datasources │
+         │  - find_metrics    │
+         └────────┬───────────┘
+                  │
+                  ▼
+         ┌────────────────────┐
+         │     Grafana        │
+         │   (HTTP API)       │
+         │                    │
+         │  Port: 3000        │
+         └────────────────────┘
+```
+
+### Why MCP Server Pattern
+
+1. **Demonstrates MCP**: Shows how to integrate MCP servers with agents
+2. **Separation of Concerns**: Grafana communication logic isolated in MCP server
+3. **Reusability**: MCP server can be used by other tools/agents
+4. **Security**: No direct credential passing to agent; MCP server handles auth
+5. **Learning Value**: Core to understanding Model Context Protocol
+
+### MCP Server Configuration
+
+The Grafana MCP server is configured (as documented in constraints):
 
 ```json
 {
-  "GRAFANA_URL": "http://localhost:3000",
-  "GRAFANA_USERNAME": "mopadmin",
-  "GRAFANA_PASSWORD": "moppassword",
-  "GRAFANA_ORG_ID": "1"
+  "mcpServers": {
+    "grafana": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--network",
+        "host",
+        "-e",
+        "GRAFANA_URL",
+        "-e",
+        "GRAFANA_USERNAME",
+        "-e",
+        "GRAFANA_PASSWORD",
+        "-e",
+        "GRAFANA_ORG_ID",
+        "mcp/grafana:latest",
+        "-t",
+        "stdio"
+      ],
+      "env": {
+        "GRAFANA_URL": "http://localhost:3000",
+        "GRAFANA_USERNAME": "mopadmin",
+        "GRAFANA_PASSWORD": "moppassword",
+        "GRAFANA_ORG_ID": "1"
+      }
+    }
+  }
 }
 ```
 
-### API Integration Pattern
+### Implementation with MCP Client
 
 ```python
-import httpx
-from typing import List, Dict, Any
+from mcp.client import MCPClient
 
-class GrafanaMetricsClient:
-    def __init__(self, url: str, username: str, password: str, org_id: str):
-        self.url = url
-        self.auth = (username, password)
-        self.org_id = org_id
-        self.client = httpx.AsyncClient()
+class GrafanaMCPTool:
+    def __init__(self, mcp_server_config):
+        self.client = MCPClient(mcp_server_config["grafana"])
     
-    async def query_metrics(
-        self, 
-        metric_name: str,
-        start_time: int,
-        end_time: int
-    ) -> List[Dict[str, Any]]:
-        """Query metrics via Grafana HTTP API.
-        
-        Endpoint: /api/datasources/query
-        Returns: Time-series data points
-        """
-        pass
+    async def query_metrics(self, metric_name, start_time, end_time):
+        """Call Grafana MCP server to query metrics."""
+        result = await self.client.call_tool(
+            "query_metrics",
+            {
+                "metric_name": metric_name,
+                "start_time": start_time.isoformat(),
+                "end_time": end_time.isoformat()
+            }
+        )
+        return result
 
-    async def get_available_metrics(self) -> List[str]:
-        """Discover available metrics in the system."""
-        pass
-```
-
-### Authentication Patterns
-- **API Key (Recommended)**: Most secure for this use case
-- **Basic Auth**: Works with configured username/password
-- **OAuth**: For multi-user environments (not needed for local demo)
-
-### Response Format
-Grafana returns time-series data:
-```python
-{
-    "target": "cpu_usage",
-    "datapoints": [
-        [value1, timestamp1],
-        [value2, timestamp2],
-        ...
-    ]
-}
+@tool
+async def query_grafana_metrics(
+    metric_name: str,
+    start_time: str,
+    end_time: str,
+    aggregation: Optional[str] = None
+) -> str:
+    """Query metrics via Grafana MCP server."""
+    mcp_tool = GrafanaMCPTool(get_mcp_config())
+    data = await mcp_tool.query_metrics(metric_name, start_time, end_time)
+    return format_result(data)
 ```
 
 ### Key Points
-- **Async Client**: Use `httpx.AsyncClient` for non-blocking queries
-- **Error Handling**: Handle connection timeouts, 404s, authentication errors
-- **Metric Discovery**: Cache available metrics to guide LLM
-- **Connection Pooling**: Reuse HTTP client for efficiency
+- **MCP Client**: Use Python MCP client library to communicate with server
+- **Tool Wrapping**: MCP server methods wrapped in LangChain @tool decorator
+- **Configuration**: MCP server config comes from environment/config file
+- **Error Handling**: MCP server handles Grafana errors; tool formats for LLM
 
 ---
 
@@ -471,28 +523,38 @@ class Config(BaseSettings):
                │
         ┌──────┴──────┐
         ▼             ▼
-   ┌────────────┐  ┌─────────────────┐
-   │  LLM       │  │ LangChain Tool  │
-   │  (OpenAI/  │  │ (query_grafana) │
-   │   Ollama)  │  └────────┬────────┘
+   ┌────────────┐  ┌──────────────────┐
+   │  LLM       │  │ LangChain Tool   │
+   │  (OpenAI/  │  │ (query_grafana)  │
+   │   Ollama)  │  └────────┬─────────┘
    └────────────┘           │
                             ▼
-                   ┌─────────────────┐
-                   │ Pydantic Models │
-                   │ (validation)    │
-                   └────────┬────────┘
+                   ┌──────────────────┐
+                   │  Pydantic Models │
+                   │  (validation)    │
+                   └────────┬─────────┘
                             │
                             ▼
-                   ┌─────────────────┐
-                   │ Grafana HTTP    │
-                   │ API Client      │
-                   └────────┬────────┘
+                   ┌──────────────────────┐
+                   │ MCP Client           │
+                   │ (call_tool)          │
+                   └────────┬─────────────┘
                             │
                             ▼
-                   ┌─────────────────┐
-                   │    Grafana      │
-                   │ (Metrics Store) │
-                   └─────────────────┘
+                   ┌──────────────────────┐
+                   │ Grafana MCP Server   │
+                   │ (Docker Container)   │
+                   │ - query_metrics      │
+                   │ - get_datasources    │
+                   │ - find_metrics       │
+                   └────────┬─────────────┘
+                            │
+                            ▼
+                   ┌──────────────────────┐
+                   │    Grafana           │
+                   │ (Metrics Store)      │
+                   │ HTTP API Port 3000   │
+                   └──────────────────────┘
 ```
 
 ### Data Flow
@@ -500,9 +562,10 @@ class Config(BaseSettings):
 2. **Agent Processing** → LangGraph node receives query
 3. **LLM Translation** → OpenAI/Ollama translates to MetricsQuery
 4. **Pydantic Validation** → Query parameters validated
-5. **Grafana Query** → HTTP client calls Grafana API
-6. **Result Formatting** → Results converted to readable format
-7. **Display** → Formatted result yielded to Gradio for display
+5. **MCP Tool Call** → LangChain tool calls MCP server
+6. **Grafana Query** → MCP server queries Grafana API
+7. **Result Formatting** → Results converted to readable format
+8. **Display** → Formatted result yielded to Gradio for display
 
 ---
 

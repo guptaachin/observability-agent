@@ -161,36 +161,118 @@ Suggestion: Available metrics include: cpu_usage, memory_utilization, disk_usage
 
 ## Internal Implementation
 
-### Grafana API Integration
+## Internal Implementation
 
-The tool uses `GrafanaMetricsClient` to execute queries:
+### MCP Server Integration
+
+The tool uses the **Grafana MCP server** as the backend. The MCP server is configured to run in Docker and provides methods for querying Grafana metrics.
 
 ```python
-class GrafanaMetricsClient:
+from mcp.client import MCPClient
+from pydantic import BaseModel
+
+class GrafanaMCPClient:
+    """Client for Grafana MCP server."""
+    
+    def __init__(self, mcp_config: dict):
+        self.client = MCPClient(mcp_config)
+    
     async def query_metrics(
         self,
         metric_name: str,
-        start_time: datetime,
-        end_time: datetime,
-        aggregation: Optional[str] = None,
-        filters: Optional[Dict[str, str]] = None
-    ) -> List[Tuple[float, int]]:  # (value, timestamp_ms)
+        start_time: str,
+        end_time: str,
+        aggregation: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
         """
-        Query Grafana API for metric data.
+        Query Grafana via MCP server.
+        
+        The MCP server handles:
+        - Authentication with Grafana
+        - API request formation
+        - Response parsing
         
         Returns:
-            List of (value, timestamp) tuples sorted by timestamp
+            List of data points with timestamp and value
         """
+        result = await self.client.call_tool(
+            "query_metrics",
+            {
+                "metric_name": metric_name,
+                "start_time": start_time,
+                "end_time": end_time,
+                "aggregation": aggregation
+            }
+        )
+        return result
+
+@tool
+async def query_grafana_metrics(
+    metric_name: str,
+    start_time: str,
+    end_time: str,
+    aggregation: Optional[str] = None,
+    filters: Optional[Dict[str, str]] = None
+) -> str:
+    """Query metrics from Grafana via MCP server."""
+    try:
+        # Get MCP client
+        mcp_client = get_grafana_mcp_client()
+        
+        # Query via MCP server
+        data_points = await mcp_client.query_metrics(
+            metric_name, start_time, end_time, aggregation
+        )
+        
+        # Format result
+        return format_result(data_points)
+        
+    except Exception as e:
+        return format_error(...)
+```
+
+### MCP Server Configuration
+
+The Grafana MCP server is configured in Docker:
+
+```json
+{
+  "mcpServers": {
+    "grafana": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--network",
+        "host",
+        "-e", "GRAFANA_URL",
+        "-e", "GRAFANA_USERNAME",
+        "-e", "GRAFANA_PASSWORD",
+        "-e", "GRAFANA_ORG_ID",
+        "mcp/grafana:latest",
+        "-t", "stdio"
+      ],
+      "env": {
+        "GRAFANA_URL": "http://localhost:3000",
+        "GRAFANA_USERNAME": "mopadmin",
+        "GRAFANA_PASSWORD": "moppassword",
+        "GRAFANA_ORG_ID": "1"
+      }
+    }
+  }
+}
 ```
 
 ### Query Execution Steps
 
-1. **Validate parameters** (above)
-2. **Build Grafana query** (PromQL or Grafana API)
-3. **Execute query** (HTTP request to Grafana)
-4. **Parse response** (extract data points)
-5. **Calculate statistics** (min, max, mean, median, sum)
-6. **Format for output** (human-readable string)
+1. **Receive parameters** (metric_name, time range, etc.)
+2. **Validate parameters** (above)
+3. **Call MCP server** (via MCPClient)
+4. **MCP server** calls Grafana HTTP API (internal to MCP server)
+5. **Parse response** from MCP server
+6. **Calculate statistics** (min, max, mean, etc.)
+7. **Format for output** (human-readable string)
 
 ### Error Handling
 

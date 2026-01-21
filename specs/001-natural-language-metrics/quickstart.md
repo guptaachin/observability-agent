@@ -92,11 +92,17 @@ pip install -r requirements.txt
 Create `.env` file in project root:
 
 ```env
-# Grafana Configuration
+# Grafana Configuration (for MCP server)
 GRAFANA_URL=http://your-grafana-url:3000
 GRAFANA_USERNAME=your_username
 GRAFANA_PASSWORD=your_password
 GRAFANA_ORG_ID=1
+
+# MCP Server Configuration
+MCP_GRAFANA_URL=http://your-grafana-url:3000
+MCP_GRAFANA_USERNAME=your_username
+MCP_GRAFANA_PASSWORD=your_password
+MCP_GRAFANA_ORG_ID=1
 
 # LLM Configuration
 LLM_SOURCE=openai
@@ -113,17 +119,33 @@ curl -X GET "http://your-grafana-url:3000/api/datasources" \
 
 ### Option B: Start Grafana with Docker
 
+Start Grafana container:
+
 ```bash
 # Create data directory
 mkdir -p ./grafana-data
 
-# Run Grafana container
+# Run Grafana container (for metrics storage)
 docker run -d \
   --name grafana \
   --network host \
   -e GF_SECURITY_ADMIN_PASSWORD=moppassword \
   -v $(pwd)/grafana-data:/var/lib/grafana \
   grafana/grafana:latest
+```
+
+Start Grafana MCP server container:
+
+```bash
+# Run Grafana MCP server
+docker run -d \
+  --name grafana-mcp \
+  --network host \
+  -e GRAFANA_URL=http://localhost:3000 \
+  -e GRAFANA_USERNAME=admin \
+  -e GRAFANA_PASSWORD=moppassword \
+  -e GRAFANA_ORG_ID=1 \
+  mcp/grafana:latest
 ```
 
 Access Grafana:
@@ -139,16 +161,28 @@ Configure datasource:
 Create `.env` file:
 
 ```env
-# Grafana Configuration
+# Grafana Configuration (for MCP server)
 GRAFANA_URL=http://localhost:3000
 GRAFANA_USERNAME=admin
 GRAFANA_PASSWORD=moppassword
 GRAFANA_ORG_ID=1
 
+# MCP Server Configuration
+MCP_GRAFANA_URL=http://localhost:3000
+MCP_GRAFANA_USERNAME=admin
+MCP_GRAFANA_PASSWORD=moppassword
+MCP_GRAFANA_ORG_ID=1
+
 # LLM Configuration
 LLM_SOURCE=openai
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-3.5-turbo
+```
+
+**Verify both containers are running**:
+
+```bash
+docker ps | grep grafana  # Should show both grafana and grafana-mcp containers
 ```
 
 ---
@@ -296,17 +330,30 @@ pip install -r requirements.txt
    curl http://localhost:3000  # or your Grafana URL
    ```
 
-2. Verify credentials in `.env`
-
-3. If using Docker Grafana:
+2. Verify Grafana MCP server is running:
    ```bash
-   docker ps | grep grafana  # Should show running container
-   docker logs grafana        # Check logs for errors
+   docker ps | grep grafana-mcp  # Should show running container
+   docker logs grafana-mcp        # Check logs for errors
    ```
 
-4. Restart Grafana:
+3. Verify credentials in `.env` (MCP_GRAFANA_* variables)
+
+4. If using Docker containers:
    ```bash
-   docker restart grafana
+   # Check both containers
+   docker ps | grep grafana
+   
+   # Should see:
+   # - grafana (metrics storage)
+   # - grafana-mcp (MCP server)
+   
+   # Restart if needed
+   docker restart grafana grafana-mcp
+   ```
+
+5. Verify containers are on same network:
+   ```bash
+   docker network inspect host  # Both should be connected
    ```
 
 ### "OpenAI API Error"
