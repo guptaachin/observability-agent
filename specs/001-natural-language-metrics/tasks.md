@@ -101,7 +101,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### Configuration Management
 
-- [ ] T011 Implement `src/config.py` to load environment variables:
+- [x] T011 Implement `src/config.py` to load environment variables:
   - `mcp_grafana_host`: str (from `MCP_GRAFANA_HOST`)
   - `mcp_grafana_port`: int (from `MCP_GRAFANA_PORT`)
   - `llm_source`: Literal["openai", "ollama"] (from `LLM_SOURCE`)
@@ -113,7 +113,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### LLM Integration
 
-- [ ] T012 Implement `src/llm.py` with factory function `get_llm()` returning LLM instance following [research.md](research.md#llm-integration):
+- [x] T012 Implement `src/llm.py` with factory function `get_llm()` returning LLM instance following [research.md](research.md#llm-integration):
   - If `config.llm_source == "openai"`: Return `ChatOpenAI(model="gpt-4-turbo", temperature=0.3, api_key=config.openai_api_key)`
   - If `config.llm_source == "ollama"`: Return `ChatOllama(model="llama2", base_url=config.ollama_base_url, temperature=0.3)`
   - Include docstring explaining temperature choice (0.3 for deterministic query translation)
