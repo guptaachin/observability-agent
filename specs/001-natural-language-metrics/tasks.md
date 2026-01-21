@@ -77,7 +77,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### Data Models
 
-- [ ] T007 [P] Implement Pydantic data models in `src/models/query.py` following [data-model.md](data-model.md#metricsquery-entity):
+- [x] T007 [P] Implement Pydantic data models in `src/models/query.py` following [data-model.md](data-model.md#metricsquery-entity):
   - `TimeRange` class (start_time: datetime, end_time: datetime)
   - `MetricsQuery` class (metric_name: str, time_range: TimeRange, aggregation: Optional[str])
   - Include validation decorators, field descriptions, and example values
