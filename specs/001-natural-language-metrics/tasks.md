@@ -47,13 +47,13 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### Setup Tasks
 
-- [ ] T001 Create project directory structure in `src/` with subdirectories: `agent/`, `tools/`, `models/` per [plan.md](plan.md#project-structure)
+- [x] T001 Create project directory structure in `src/` with subdirectories: `agent/`, `tools/`, `models/` per [plan.md](plan.md#project-structure)
 
-- [ ] T002 Create project directory structure in `tests/` with subdirectories: `unit/`, `integration/`, `fixtures/`
+- [x] T002 Create project directory structure in `tests/` with subdirectories: `unit/`, `integration/`, `fixtures/`
 
-- [ ] T003 Create `requirements.txt` with dependencies: `langchain>=0.1.0`, `langgraph>=0.1.0`, `gradio>=4.0.0`, `pydantic>=2.0.0`, `python-dotenv`, `pytest>=7.0.0`, `pytest-asyncio`, `aiohttp` (for MCP client HTTP calls)
+- [x] T003 Create `requirements.txt` with dependencies: `langchain>=0.1.0`, `langgraph>=0.1.0`, `gradio>=4.0.0`, `pydantic>=2.0.0`, `python-dotenv`, `pytest>=7.0.0`, `pytest-asyncio`, `aiohttp` (for MCP client HTTP calls)
 
-- [ ] T004 Create `.env.example` file with required environment variables:
+- [x] T004 Create `.env.example` file with required environment variables:
   - `MCP_GRAFANA_HOST=localhost`
   - `MCP_GRAFANA_PORT=8000`
   - `LLM_SOURCE=openai` (or `ollama`)
@@ -61,9 +61,9 @@ This document breaks down implementation into atomic, reviewable tasks organized
   - `OLLAMA_BASE_URL=http://localhost:11434` (if using Ollama)
   - `GRADIO_SERVER_PORT=7860`
 
-- [ ] T005 Create `src/__init__.py` (empty file to make src a package)
+- [x] T005 Create `src/__init__.py` (empty file to make src a package)
 
-- [ ] T006 Create `tests/__init__.py` (empty file to make tests a package)
+- [x] T006 Create `tests/__init__.py` (empty file to make tests a package)
 
 ---
 
