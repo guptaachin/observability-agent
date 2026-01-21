@@ -8,8 +8,8 @@ Design the constitution around the following:
 - Minimalism: Implement only core functionality; no insights or autonomous actions.
 - Extensibility: Establish a safe foundation for future expansion.
 - Accuracy & Clarity: Outputs must reflect real data and be easy to understand.
-- Testing: Ensure to add tests before making changes. We need to all previous tests pass before we move on to add extra code, features.
-
+- For education and learning: This project is for education and learning so tests can be skipped and focus on learning core features.
+- Simplistic dir structure: Since we want to learn we will only create nested code dir structure if we absolutely need it.
 ```
 
 # specify
@@ -116,10 +116,49 @@ Metrics Query Execution:
 - The tool should return raw time-series data or simple aggregates
 
 Configuration:
-- Grafana MCP server connection details must be configurable
+- Grafana MCP server connection details must be configurable.
+- Grafana MCP server runs in docker and configured in cursor using this
+
+```
+{
+  "mcpServers": {
+    "grafana": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--network",
+        "host",
+        "-e",
+        "GRAFANA_URL",
+        "-e",
+        "GRAFANA_USERNAME",
+        "-e",
+        "GRAFANA_PASSWORD",
+        "-e",
+        "GRAFANA_ORG_ID",
+        "mcp/grafana:latest",
+        "-t",
+        "stdio"
+      ],
+      "env": {
+        "GRAFANA_URL": "http://localhost:3000",
+        "GRAFANA_USERNAME": "mopadmin",
+        "GRAFANA_PASSWORD": "moppassword",
+        "GRAFANA_ORG_ID": "1"
+      }
+    }
+  }
+}
+```
+
 - Configuration should be provided via environment variables or a config file
 - No credentials or endpoints should be hardcoded
 - Reasonable defaults may be provided for local development
+
+LLM: 
+- We add support for openai and ollama.
 
 Error Handling:
 - Handle invalid or unsupported queries gracefully
@@ -151,4 +190,9 @@ Deliverables:
 # Tasks
 ```
 /speckit.tasks
+```
+
+# Implement
+```
+/speckit.implement
 ```
