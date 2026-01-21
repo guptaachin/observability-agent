@@ -21,9 +21,9 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan (src/agent/, src/tools/, src/ui/, src/config/, tests/unit/, tests/integration/, tests/fixtures/)
-- [ ] T002 Initialize Python project with dependencies (requirements.txt with gradio, langgraph, langchain, python-dotenv, pytest)
-- [ ] T003 [P] Configure linting and formatting tools (setup black, flake8 or ruff)
+- [x] T001 Create project structure per implementation plan (src/agent/, src/tools/, src/ui/, src/config/, tests/unit/, tests/integration/, tests/fixtures/)
+- [x] T002 Initialize Python project with dependencies (requirements.txt with gradio, langgraph, langchain, python-dotenv, pytest)
+- [x] T003 [P] Configure linting and formatting tools (setup black, flake8 or ruff)
 
 ---
 
