@@ -9,7 +9,7 @@ validation and convenience methods for summary and statistics.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -150,6 +150,51 @@ class MetricsQueryResult(BaseModel):
                         {"timestamp": "2026-01-21T10:01:00", "value": 12.5},
                     ],
                 }
+            ]
+        }
+    }
+
+
+class QueryError(BaseModel):
+    """
+    Represents an error encountered while parsing or executing a metrics query.
+
+    This model is intended for use by the agent to convey actionable error
+    information back to the user-facing layers.
+    """
+
+    error_type: Literal[
+        "parsing_error",
+        "metric_not_found",
+        "invalid_time_range",
+        "grafana_unavailable",
+        "unsupported_operation",
+        "invalid_query",
+    ] = Field(description="Category of error")
+
+    message: str = Field(description="Human-readable error message")
+
+    suggestion: Optional[str] = Field(
+        default=None, description="Suggestion for how to fix or rephrase the query"
+    )
+
+    details: Optional[str] = Field(
+        default=None, description="Detailed error information for logging"
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "error_type": "metric_not_found",
+                    "message": "Metric 'disk_io' not found in Grafana",
+                    "suggestion": "Try 'disk_write_rate', 'disk_read_rate', or 'disk_usage'",
+                },
+                {
+                    "error_type": "parsing_error",
+                    "message": "Could not understand your query",
+                    "suggestion": "Try: 'Show [metric_name] for the [time_period]'",
+                },
             ]
         }
     }
