@@ -88,7 +88,11 @@ This document breaks down implementation into atomic, reviewable tasks organized
   - `AggregationStats` class (min: float, max: float, mean: float, count: int)
   - `MetricsQueryResult` class (metric_name: str, unit: str, data_points: List[DataPoint], stats: Optional[AggregationStats])
   - Include formatted output methods for readability
-
+- [x] T008 [P] Implement Pydantic data models in `src/models/result.py` following [data-model.md](data-model.md#metricsqueryresult-entity):
+  - `DataPoint` class (timestamp: datetime, value: float)
+  - `AggregationStats` class (min: float, max: float, mean: float, count: int)
+  - `MetricsQueryResult` class (metric_name: str, unit: str, data_points: List[DataPoint], stats: Optional[AggregationStats])
+  - Include formatted output methods for readability
 - [ ] T009 [P] Implement Pydantic data models in `src/models/result.py` for error handling following [data-model.md](data-model.md#queryerror-entity):
   - `QueryError` class (error_code: str, message: str, suggestion: Optional[str])
   - Predefined error codes: `METRIC_NOT_FOUND`, `INVALID_TIME_RANGE`, `QUERY_TIMEOUT`, `MCP_SERVER_UNAVAILABLE`
