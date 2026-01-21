@@ -1,69 +1,50 @@
-<!--
-Sync Impact Report:
-Version change: N/A → 1.0.0 (initial constitution)
-Added sections: Purpose, Development Workflow
-Modified principles: All new (4 principles defined)
-Templates requiring updates:
-  ✅ plan-template.md - Constitution Check section aligns with testing principle
-  ✅ spec-template.md - No changes needed (already emphasizes testable requirements)
-  ✅ tasks-template.md - Already emphasizes test-first approach
-  ⚠️ Command files - No changes needed (generic guidance maintained)
-Follow-up TODOs: None
--->
-
-# Observability Agent Constitution
-
-## Purpose
-
-This project serves as a learning platform to understand how to build agentic applications and explore their practical use in observability contexts. The focus is on foundational understanding rather than production-ready features.
+# [PROJECT_NAME] Constitution
+<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### I. Minimalism
+### [PRINCIPLE_1_NAME]
+<!-- Example: I. Library-First -->
+[PRINCIPLE_1_DESCRIPTION]
+<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-Implement only core functionality essential to the learning objectives. No insights, autonomous actions, or advanced features beyond what is necessary to demonstrate agentic application patterns in observability. Every feature must have a clear learning purpose. Rationale: Prevents scope creep and maintains focus on core concepts rather than feature complexity.
+### [PRINCIPLE_2_NAME]
+<!-- Example: II. CLI Interface -->
+[PRINCIPLE_2_DESCRIPTION]
+<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
-### II. Extensibility
+### [PRINCIPLE_3_NAME]
+<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+[PRINCIPLE_3_DESCRIPTION]
+<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-Establish a safe foundation for future expansion. Design interfaces, data structures, and architectural patterns that can accommodate growth without requiring fundamental rewrites. Document extension points clearly. Rationale: Enables incremental learning while preserving the ability to build upon previous work without technical debt.
+### [PRINCIPLE_4_NAME]
+<!-- Example: IV. Integration Testing -->
+[PRINCIPLE_4_DESCRIPTION]
+<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
-### III. Accuracy & Clarity
+### [PRINCIPLE_5_NAME]
+<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+[PRINCIPLE_5_DESCRIPTION]
+<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-All outputs MUST reflect real data and be easy to understand. No synthetic data, mock responses, or ambiguous representations. Documentation and code comments must clearly explain intent and behavior. Rationale: Ensures learning is based on authentic patterns and prevents misunderstandings that could propagate to future work.
+## [SECTION_2_NAME]
+<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
-### IV. Testing (NON-NEGOTIABLE)
+[SECTION_2_CONTENT]
+<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
-Tests MUST be added before making changes. All previous tests MUST pass before adding new code or features. Test failures block further development until resolved. Rationale: Maintains code quality and prevents regressions as the project grows, ensuring each increment builds on a stable foundation.
+## [SECTION_3_NAME]
+<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
 
-## Development Workflow
-
-### Test-First Discipline
-
-1. Write tests for new functionality before implementation
-2. Verify tests fail initially (red phase)
-3. Implement minimum code to make tests pass (green phase)
-4. Refactor while maintaining passing tests
-5. Ensure all existing tests pass before proceeding to new features
-
-### Quality Gates
-
-- All tests must pass before merging changes
-- New features must include corresponding tests
-- Test coverage should reflect the scope of changes
-- Integration tests required for cross-component interactions
+[SECTION_3_CONTENT]
+<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
+<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-This constitution supersedes all other development practices. Amendments require:
+[GOVERNANCE_RULES]
+<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-1. Documentation of the proposed change and rationale
-2. Assessment of impact on existing principles
-3. Update to this document with version increment:
-   - MAJOR: Backward incompatible principle changes
-   - MINOR: New principles or materially expanded guidance
-   - PATCH: Clarifications, wording improvements, typo fixes
-4. Propagation of changes to dependent templates and documentation
-
-All pull requests and code reviews MUST verify compliance with these principles. Complexity beyond minimalism must be explicitly justified. Use this constitution as the primary reference for development decisions.
-
-**Version**: 1.0.0 | **Ratified**: 2026-01-20 | **Last Amended**: 2026-01-20
+**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
