@@ -16,7 +16,7 @@ from langgraph.graph import StateGraph
 from src.llm import get_llm
 from src.models import MetricsQuery, MetricsQueryResult, QueryError, TimeRange
 from src.tools import query_grafana_metrics
-from src.agent.query_parser import parse_user_question
+from src.agent.query_parser import parse_user_question, QueryParsingError
 
 
 class MetricsQueryState(TypedDict):
@@ -56,8 +56,14 @@ def parse_question_node(state: MetricsQueryState) -> Dict[str, Any]:
         llm = get_llm()
         parsed_query = parse_user_question(user_question, llm)
         return {"parsed_query": parsed_query, "error": None}
-    except QueryError as e:
-        return {"parsed_query": None, "error": e}
+    except QueryParsingError as e:
+        # Convert QueryParsingError to QueryError
+        error = QueryError(
+            error_type="parsing_error",
+            message=str(e),
+            suggestion="Try phrasing as: 'Show [metric_name] for [time_period]'"
+        )
+        return {"parsed_query": None, "error": error}
     except Exception as e:
         error = QueryError(
             error_type="parsing_error",

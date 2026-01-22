@@ -22,7 +22,7 @@ def get_llm() -> Any:
 
     if cfg.llm_source == "openai":
         try:
-            from langchain.chat_models import ChatOpenAI
+            from langchain_openai import ChatOpenAI
 
             return ChatOpenAI(model="gpt-4-turbo", temperature=0.3, openai_api_key=cfg.openai_api_key)
         except Exception as e:  # ImportError or runtime error

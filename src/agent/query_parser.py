@@ -13,6 +13,11 @@ from src.models import MetricsQuery, TimeRange, QueryError
 from src.agent.prompts import QUERY_PARSING_PROMPT, TIME_RANGE_CONVERSION_PROMPT
 
 
+class QueryParsingError(Exception):
+    """Raised when query parsing fails (will be converted to QueryError by agent)."""
+    pass
+
+
 def parse_user_question(question: str, llm) -> MetricsQuery:
     """
     Parse a natural language question into a MetricsQuery.
@@ -29,7 +34,7 @@ def parse_user_question(question: str, llm) -> MetricsQuery:
         MetricsQuery with parsed metric_name and time_range
         
     Raises:
-        QueryError: If LLM output cannot be parsed as JSON or is invalid
+        QueryParsingError: If LLM output cannot be parsed as JSON or is invalid
     """
     try:
         # Step 1: Extract metric and relative time range
@@ -71,23 +76,11 @@ def parse_user_question(question: str, llm) -> MetricsQuery:
         )
     
     except json.JSONDecodeError as e:
-        raise QueryError(
-            error_type="parsing_error",
-            message=f"Failed to parse LLM response as JSON: {str(e)}",
-            suggestion="Try rephrasing your question more clearly"
-        )
+        raise QueryParsingError(f"Failed to parse LLM response as JSON: {str(e)}")
     except ValueError as e:
-        raise QueryError(
-            error_type="parsing_error",
-            message=f"Could not extract metric information: {str(e)}",
-            suggestion="Try phrasing as: 'Show [metric] for [time_period]'"
-        )
+        raise QueryParsingError(f"Could not extract metric information: {str(e)}")
     except Exception as e:
-        raise QueryError(
-            error_type="parsing_error",
-            message=f"Error parsing question: {str(e)}",
-            suggestion="Try rephrasing your question"
-        )
+        raise QueryParsingError(f"Error parsing question: {str(e)}")
 
 
 def convert_relative_time(relative_expr: str, llm) -> TimeRange:
@@ -106,7 +99,7 @@ def convert_relative_time(relative_expr: str, llm) -> TimeRange:
         TimeRange with absolute start_time and end_time
         
     Raises:
-        QueryError: If LLM output cannot be parsed or time range is invalid
+        QueryParsingError: If LLM output cannot be parsed or time range is invalid
     """
     try:
         from langchain_core.prompts import PromptTemplate
@@ -148,20 +141,8 @@ def convert_relative_time(relative_expr: str, llm) -> TimeRange:
         return TimeRange(start_time=start_time, end_time=end_time)
     
     except json.JSONDecodeError as e:
-        raise QueryError(
-            error_type="parsing_error",
-            message=f"Failed to parse time conversion response: {str(e)}",
-            suggestion="Try a different time expression like 'last 24 hours' or 'today'"
-        )
+        raise QueryParsingError(f"Failed to parse time conversion response: {str(e)}")
     except ValueError as e:
-        raise QueryError(
-            error_type="parsing_error",
-            message=f"Could not convert time range: {str(e)}",
-            suggestion="Try expressions like 'last 1 hour', 'yesterday', or 'past 7 days'"
-        )
+        raise QueryParsingError(f"Could not convert time range: {str(e)}")
     except Exception as e:
-        raise QueryError(
-            error_type="parsing_error",
-            message=f"Error converting time range: {str(e)}",
-            suggestion="Try a different time expression"
-        )
+        raise QueryParsingError(f"Error converting time range: {str(e)}")

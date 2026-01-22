@@ -4,6 +4,11 @@ Loads configuration, initializes the Gradio UI, and launches the web server.
 """
 
 import sys
+import os
+
+# Load environment variables (including LangSmith config)
+from dotenv import load_dotenv
+load_dotenv()
 
 from src.config import get_config
 from src.ui import create_interface
