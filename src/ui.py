@@ -100,7 +100,6 @@ def create_interface() -> gr.ChatInterface:
         ],
         title="Natural Language Metrics Query",
         description="Ask about system metrics in plain English. The agent will fetch and format the results for you.",
-        theme=gr.themes.Soft(),
         type="messages"
     )
     
