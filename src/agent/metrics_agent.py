@@ -12,11 +12,11 @@ from typing import Any, Dict, Optional
 from typing_extensions import TypedDict
 
 from langgraph.graph import StateGraph
-from langchain_core.prompts import PromptTemplate
 
 from src.llm import get_llm
 from src.models import MetricsQuery, MetricsQueryResult, QueryError, TimeRange
 from src.tools import query_grafana_metrics
+from src.agent.query_parser import parse_user_question
 
 
 class MetricsQueryState(TypedDict):
@@ -54,67 +54,10 @@ def parse_question_node(state: MetricsQueryState) -> Dict[str, Any]:
     
     try:
         llm = get_llm()
-        
-        # Create a prompt for parsing the user's question
-        parse_prompt = PromptTemplate(
-            input_variables=["question"],
-            template="""Extract the metric name and time range from this question. 
-            
-Question: {question}
-
-Respond with JSON only:
-{{
-  "metric_name": "the metric to query",
-  "time_range": {{
-    "relative": "last 24 hours" or similar, OR
-    "start": "ISO datetime" and "end": "ISO datetime"
-  }},
-  "aggregation": "avg|max|min|sum" (optional, default: "avg")
-}}"""
-        )
-        
-        # Call LLM
-        chain = parse_prompt | llm
-        response = chain.invoke({"question": user_question})
-        
-        # Parse the response
-        response_text = response.content if hasattr(response, 'content') else str(response)
-        
-        # Extract JSON from response
-        json_start = response_text.find('{')
-        json_end = response_text.rfind('}') + 1
-        if json_start == -1 or json_end == 0:
-            raise ValueError("No JSON found in LLM response")
-        
-        json_str = response_text[json_start:json_end]
-        parsed_data = json.loads(json_str)
-        
-        # Create MetricsQuery with basic time range (24h default)
-        from datetime import datetime, timedelta
-        now = datetime.utcnow()
-        start = now - timedelta(hours=24)
-        
-        # Check if time_range has relative or specific datetimes
-        time_range_data = parsed_data.get("time_range", {})
-        if "start" in time_range_data and "end" in time_range_data:
-            # Parse ISO datetimes
-            start = datetime.fromisoformat(time_range_data["start"].replace('Z', '+00:00'))
-            end = datetime.fromisoformat(time_range_data["end"].replace('Z', '+00:00'))
-        else:
-            # Use relative (or default 24h)
-            end = now
-        
-        time_range = TimeRange(start_time=start, end_time=end)
-        
-        parsed_query = MetricsQuery(
-            metric_name=parsed_data.get("metric_name", ""),
-            time_range=time_range,
-            aggregation=parsed_data.get("aggregation", "avg"),
-            filters={},
-            confidence=0.8
-        )
-        
+        parsed_query = parse_user_question(user_question, llm)
         return {"parsed_query": parsed_query, "error": None}
+    except QueryError as e:
+        return {"parsed_query": None, "error": e}
     except Exception as e:
         error = QueryError(
             error_type="parsing_error",

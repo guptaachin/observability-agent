@@ -172,7 +172,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### LLM Prompting for Query Parsing
 
-- [ ] T018 [P] Create `src/agent/prompts.py` with LLM prompt templates:
+- [x] T018 [P] Create `src/agent/prompts.py` with LLM prompt templates:
   - `QUERY_PARSING_PROMPT`: Instructs LLM to extract metric_name and relative_time_range from user question
     - Input: natural language question
     - Output: JSON with `metric_name: str`, `relative_time_range: str` (e.g., "last 1 hour")
@@ -184,14 +184,14 @@ This document breaks down implementation into atomic, reviewable tasks organized
     - Include current time context in prompt
   - Include docstrings explaining each prompt's purpose
 
-- [ ] T019 [P] Create utility function `src/agent/query_parser.py` with:
+- [x] T019 [P] Create utility function `src/agent/query_parser.py` with:
   - `parse_user_question(question: str, llm) -> MetricsQuery`: Orchestrates LLM calls to extract metric_name and time_range
   - `convert_relative_time(relative_expr: str, llm) -> TimeRange`: Converts relative time expression to absolute range
   - Error handling: Catch JSON parse errors from LLM output and raise QueryError with `INVALID_QUERY` code
 
 ### UI Implementation
 
-- [ ] T020 Implement Gradio interface in `src/ui.py` following [ui-contract.md](contracts/ui-contract.md):
+- [x] T020 Implement Gradio interface in `src/ui.py` following [ui-contract.md](contracts/ui-contract.md):
   - Create async function `answer_question(message: str, history: list) -> Generator[str, None, None]`:
     - Initialize agent from Phase 3
     - Call agent.invoke() with user question
@@ -206,7 +206,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### Main Entry Point
 
-- [ ] T021 Create `src/main.py` CLI entrypoint:
+- [x] T021 Create `src/main.py` CLI entrypoint:
   - Load configuration
   - Create Gradio interface
   - Launch server with `interface.launch(server_name="0.0.0.0", server_port=config.gradio_server_port, share=False)`
