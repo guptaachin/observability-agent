@@ -38,7 +38,7 @@ def get_llm() -> Any:
             return Ollama(base_url=cfg.ollama_base_url, temperature=0.3)
         except Exception:
             try:
-                from langchain.llms import Ollama
+                from langchain_community.llms import Ollama
 
                 return Ollama(base_url=cfg.ollama_base_url, temperature=0.3)
             except Exception as e:
