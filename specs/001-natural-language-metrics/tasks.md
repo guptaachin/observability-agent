@@ -139,7 +139,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
   - Handle connection errors with descriptive messages
   - Include timeout (5 seconds) for MCP server calls
 
-- [ ] T014 Implement Grafana metrics tool in `src/tools/grafana_metrics_tool.py` following [metric-tool-contract.md](contracts/metric-tool-contract.md):
+ - [x] T014 Implement Grafana metrics tool in `src/tools/grafana_metrics_tool.py` following [metric-tool-contract.md](contracts/metric-tool-contract.md):
   - Implement `query_grafana_metrics(query: MetricsQuery) -> MetricsQueryResult` async function
   - Use MCPClient to call MCP server's `query_grafana_metrics` tool
   - Parse MCP server response into MetricsQueryResult
@@ -147,7 +147,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
   - Decorate function with `@tool` from `langchain.tools` for LangChain integration
   - Include docstring explaining tool purpose and parameters per LangChain tool standards
 
-- [ ] T015 Create `src/tools/__init__.py` exporting: `query_grafana_metrics`
+ [x] T015 Create `src/tools/__init__.py` exporting: `query_grafana_metrics`
 
 ### Agent Implementation
 
