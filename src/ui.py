@@ -99,8 +99,7 @@ def create_interface() -> gr.ChatInterface:
             "Average request latency today"
         ],
         title="Natural Language Metrics Query",
-        description="Ask about system metrics in plain English. The agent will fetch and format the results for you.",
-        type="messages"
+        description="Ask about system metrics in plain English. The agent will fetch and format the results for you."
     )
     
     return interface
