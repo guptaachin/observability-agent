@@ -151,7 +151,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
 
 ### Agent Implementation
 
-- [ ] T016 Implement LangGraph agent in `src/agent/metrics_agent.py` following [agent-contract.md](contracts/agent-contract.md):
+- [x] T016 Implement LangGraph agent in `src/agent/metrics_agent.py` following [agent-contract.md](contracts/agent-contract.md):
   - Define `MetricsQueryState` TypedDict with fields: `user_question: str`, `parsed_query: Optional[MetricsQuery]`, `query_result: Optional[MetricsQueryResult]`, `error: Optional[QueryError]`, `final_response: str`
   - Implement `parse_question_node(state: MetricsQueryState) -> dict` to:
     - Call LLM with prompt to extract metric_name and time_range from user_question
@@ -168,7 +168,7 @@ This document breaks down implementation into atomic, reviewable tasks organized
   - Build graph using StateGraph with three nodes: parse → execute → format
   - Compile graph and expose as `create_agent()` function returning runnable workflow
 
-- [ ] T017 Create `src/agent/__init__.py` exporting: `create_agent`, `MetricsQueryState`
+- [x] T017 Create `src/agent/__init__.py` exporting: `create_agent`, `MetricsQueryState`
 
 ### LLM Prompting for Query Parsing
 
