@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Grafana Dashboard Agent Configuration Schema",
+  "description": "Configuration schema for environment variables and .env file",
+  "type": "object",
+  "properties": {
+    "GRAFANA_URL": {
+      "type": "string",
+      "format": "uri",
+      "description": "Base URL of Grafana instance (e.g., http://localhost:3000)",
+      "default": "http://localhost:3000"
+    },
+    "GRAFANA_USERNAME": {
+      "type": "string",
+      "description": "Grafana username for authentication",
+      "default": "mopadmin"
+    },
+    "GRAFANA_PASSWORD": {
+      "type": "string",
+      "description": "Grafana password for authentication (should not be hardcoded in production)",
+      "examples": ["moppassword"]
+    },
+    "GRAFANA_ORG_ID": {
+      "type": "integer",
+      "description": "Grafana organization ID to query dashboards from",
+      "default": 1,
+      "minimum": 1
+    },
+    "LANGSMITH_API_KEY": {
+      "type": "string",
+      "description": "LangSmith API key for observability (optional; if set, all interactions logged)"
+    },
+    "LANGSMITH_PROJECT_NAME": {
+      "type": "string",
+      "description": "LangSmith project name for organizing traces (optional)",
+      "default": "grafana-dashboard-agent"
+    },
+    "LLM_PROVIDER": {
+      "type": "string",
+      "enum": ["openai", "ollama"],
+      "description": "Language model provider",
+      "default": "openai"
+    },
+    "OPENAI_API_KEY": {
+      "type": "string",
+      "description": "OpenAI API key (required if LLM_PROVIDER=openai)"
+    },
+    "OPENAI_MODEL": {
+      "type": "string",
+      "description": "OpenAI model name (e.g., gpt-4, gpt-3.5-turbo)",
+      "default": "gpt-4"
+    },
+    "OLLAMA_URL": {
+      "type": "string",
+      "format": "uri",
+      "description": "Ollama server URL (required if LLM_PROVIDER=ollama)",
+      "default": "http://localhost:11434"
+    },
+    "OLLAMA_MODEL": {
+      "type": "string",
+      "description": "Ollama model name (e.g., mistral, neural-chat)",
+      "default": "mistral"
+    },
+    "AGENT_RESPONSE_TIMEOUT_SECONDS": {
+      "type": "integer",
+      "description": "Maximum seconds to wait for agent response",
+      "default": 10,
+      "minimum": 5,
+      "maximum": 60
+    },
+    "GRADIO_SHARE": {
+      "type": "boolean",
+      "description": "Whether to create a public shareable link (Gradio)",
+      "default": false
+    },
+    "GRADIO_SERVER_NAME": {
+      "type": "string",
+      "description": "Gradio server hostname",
+      "default": "127.0.0.1"
+    },
+    "GRADIO_SERVER_PORT": {
+      "type": "integer",
+      "description": "Gradio server port",
+      "default": 7860,
+      "minimum": 1024,
+      "maximum": 65535
+    }
+  },
+  "required": ["GRAFANA_PASSWORD"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "GRAFANA_URL": "http://localhost:3000",
+      "GRAFANA_USERNAME": "mopadmin",
+      "GRAFANA_PASSWORD": "moppassword",
+      "GRAFANA_ORG_ID": 1,
+      "LLM_PROVIDER": "openai",
+      "OPENAI_API_KEY": "sk-...",
+      "OPENAI_MODEL": "gpt-4",
+      "LANGSMITH_API_KEY": "ls_...",
+      "GRADIO_SERVER_PORT": 7860
+    },
+    {
+      "GRAFANA_URL": "https://grafana.example.com",
+      "GRAFANA_USERNAME": "production_user",
+      "GRAFANA_PASSWORD": "prod_pass",
+      "GRAFANA_ORG_ID": 5,
+      "LLM_PROVIDER": "ollama",
+      "OLLAMA_URL": "http://localhost:11434",
+      "OLLAMA_MODEL": "neural-chat",
+      "AGENT_RESPONSE_TIMEOUT_SECONDS": 20
+    }
+  ]
+}

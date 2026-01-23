@@ -106,7 +106,79 @@ README.md                # Setup & usage guide
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+✅ **No complexity overrides required.** Feature respects all constitutional principles. Flat structure, single-node agent, minimal scope. Proceed to Phase 0.
+
+---
+
+## Phase 0: Research & Clarification
+
+*Objective: Resolve any unknowns and validate technology choices.*
+
+### Research Questions
+
+1. **LangGraph Learning**: How to structure a single-node graph that is minimal yet extensible for future multi-node expansion?
+2. **Grafana MCP Integration**: Best practices for wrapping the Grafana MCP tool in LangChain-compatible format?
+3. **Configuration Management**: Recommended pattern for loading environment variables, config files, and defaults in Python?
+4. **LangSmith Integration**: How to automatically log agent interactions without code clutter?
+5. **Gradio Interface**: Best practices for building a chat interface that displays agent responses cleanly?
+6. **Error Handling Patterns**: How to route invalid queries to meaningful error responses via LLM?
+
+### Phase 0 Deliverable
+
+📄 **research.md** (TBD) — Consolidate findings from research into:
+- Decision: [technology choice]
+- Rationale: [why chosen]
+- Alternatives considered: [evaluated options]
+
+---
+
+## Phase 1: Design & Contracts
+
+*Objective: Design data models, API contracts, and quickstart guide.*
+
+### Phase 1 Deliverables
+
+📄 **data-model.md** (TBD)
+- **Dashboard** entity: ID, title, tags, description, updated timestamp
+- **Query** entity: user text, extracted intent, scope (all dashboards | specific filters)
+- **Message** entity (for chat history within single interaction)
+- Relationships and state transitions
+
+📄 **contracts/** (TBD)
+- `agent-interface.md`: LangGraph node input/output contract
+- `grafana-mcp.md`: Grafana MCP tool wrapper interface (callable from LLM)
+- `config-schema.json`: Configuration schema for env vars and config file
+
+📄 **quickstart.md** (TBD)
+- Step-by-step setup for cloning repository
+- Environment variable configuration
+- Running the Gradio interface
+- Example queries and expected outputs
+- Troubleshooting common errors (e.g., MCP server down, no dashboards)
+
+### Phase 1 Agent Context Update
+
+After completing design documents, run:
+
+```bash
+./.specify/scripts/bash/update-agent-context.sh copilot
+```
+
+This updates agent-specific context files with new technologies (LangGraph, Gradio, LangSmith, MCP) while preserving manual additions.
+
+### Phase 1 Re-evaluation
+
+Post-design, re-check Constitution compliance:
+- ✅ Minimal scope preserved?
+- ✅ Single-node agent design still sound?
+- ✅ Configuration fully externalized?
+- ✅ No fabrication in data models?
+
+---
+
+## Next Steps
+
+1. **Phase 0 Complete**: Run research tasks to finalize technology guidance.
+2. **Phase 1 Start**: Generate data-model.md, contracts/, and quickstart.md using research findings.
+3. **Phase 2**: `/speckit.tasks` will generate implementation task list based on Phase 1 design.
+4. **Implementation**: Begin with Phase 1 (P1 user story) independent delivery.
