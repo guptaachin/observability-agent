@@ -12,6 +12,7 @@ Design the constitution around the following principles:
 - **Accuracy & Clarity**: Outputs must reflect real data and be easy to understand
 - **For Education & Learning**: Tests can be skipped, focus on learning core features
 - **Simplistic Directory Structure**: Create nested code directories only when absolutely necessary
+- **Minimal code**: Create minimal code to complete the project.
 
 ---
 
@@ -38,7 +39,7 @@ Enable engineers to successfully interact with grafana mcp via a single node age
 
 ### Constraints
 
-- The capability must operate on top of the existing observability stack
+- The capability must operate on top of the existing observability stack running in docker.
 - The capability must not require changes to metric ingestion or storage
 - The experience should be simple enough for someone cloning the repository to try without prior context
 
@@ -52,10 +53,9 @@ Enable engineers to successfully interact with grafana mcp via a single node age
 
 1. User submits a natural language query via a chat-style interface
 2. The query is routed through a simple agent workflow
-5. Results are returned to the user in a readable format
+3. Results are returned to the user in a readable format
 
 ### User Interface
-
 - Use Gradio to provide a lightweight, local chat interface
 - Support user text input and text-based responses from the agent
 - The interface is for demo and exploration purposes only
@@ -69,6 +69,7 @@ Enable engineers to successfully interact with grafana mcp via a single node age
   - Receiving the user query
   - Calling the language model to interpret the query
   - Formatting and returning the response
+- Talking to grafana can only be done via Grafana MCP server. Do not use APIs
 
 ### Configuration
 
@@ -141,8 +142,6 @@ We add support for both OpenAI and Ollama.
 - LangChain-based metrics query tool
 - Configurable integration with Grafana MCP
 - End-to-end demo runnable locally
-- The code should be fully observable via langsmith api calls.
-- Integrate with langgraph cli so I can see my langgraph with langgraph dev
 
 ---
 
