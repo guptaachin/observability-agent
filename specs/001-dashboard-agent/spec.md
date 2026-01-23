@@ -58,8 +58,9 @@ An engineer clones the repository and wants to connect to their own Grafana inst
 ### Edge Cases
 
 - What happens when the Grafana MCP server is not running? → Agent returns clear error: "Cannot connect to Grafana. Please ensure the MCP server is running."
+- What happens if the MCP server becomes unreachable mid-interaction? → Agent fails fast (no retries) and returns error: "Grafana connection lost. Please try again."
 - What happens if Grafana returns an empty dashboard list? → Agent returns empty list with message: "No dashboards found."
-- What happens if a query takes longer than expected? → Agent returns timeout error: "Query took too long. Please try again."
+- What happens if a query takes longer than expected? → Agent returns timeout error: "Query took too long (>10s). Please try again or check Grafana availability."
 - What happens if the user submits a very long or complex query? → Agent processes it and either returns results or a clear error message (no truncation or silent failure).
 
 ## Requirements *(mandatory)*
@@ -69,7 +70,7 @@ An engineer clones the repository and wants to connect to their own Grafana inst
 - **FR-001**: System MUST accept natural language queries from a user via a Gradio chat interface.
 - **FR-002**: System MUST route queries through a single-node LangGraph agent that calls a language model to interpret user intent.
 - **FR-003**: System MUST use the Grafana MCP tool to fetch dashboard metadata (name, ID, tags, description) from Grafana.
-- **FR-004**: System MUST return dashboard query results in a readable, human-friendly format (e.g., formatted list with titles and metadata).
+- **FR-004**: System MUST return dashboard query results in a readable, human-friendly format containing metadata only: dashboard ID, title, tags, folder name/ID, last updated timestamp, and dashboard URL. Descriptions and panel details are NOT included (deferred to future enhancements).
 - **FR-005**: System MUST read Grafana connection configuration from environment variables (GRAFANA_URL, GRAFANA_USERNAME, GRAFANA_PASSWORD, GRAFANA_ORG_ID) with documented defaults for local development.
 - **FR-006**: System MUST return clear error messages when queries are outside the supported scope (e.g., metrics querying, anomaly detection).
 - **FR-007**: System MUST NOT fabricate, infer, or augment data beyond what Grafana returns; all outputs must reflect actual data.
@@ -91,12 +92,24 @@ An engineer clones the repository and wants to connect to their own Grafana inst
 - **SC-003**: Invalid or unsupported queries (e.g., metrics querying) return clear error messages that help users understand supported capabilities.
 - **SC-004**: All agent interactions are observable via LangSmith; queries, model calls, and MCP tool invocations are logged and inspectable.
 - **SC-005**: The workflow is inspectable via `langgraph dev` without requiring additional configuration or code changes.
-- **SC-006**: No credentials, API keys, or sensitive information appear in logs, error messages, or user-facing output.
+- **SC-006**: No credentials, API keys, or sensitive information appear in normal operation logs or user-facing error messages. Full context (including credentials) MAY be logged only during error conditions for debugging purposes; error logs should not be exposed to end users without review.
+
+## Clarifications
+
+### Session 2026-01-23
+
+- Q: How should the Grafana MCP server be managed (agent spawns it, external & pre-running, or hybrid)? → A: External service, pre-running, validated at startup (agent checks connectivity but does not manage lifecycle).
+- Q: Should OpenAI and Ollama be equally supported, or is one primary? → A: OpenAI (gpt-4) is primary and tested; Ollama is alternative with documented configuration but not equal test parity.
+- Q: How should credentials/API keys be handled in logs (strict redaction, no logging, error-only, context-dependent)? → A: Error-only logging—log full context (including credentials) only when errors occur for debugging; redact sensitive fields in normal operation logs.
+- Q: Should dashboard list responses include descriptions, panels, or only metadata? → A: Metadata only (ID, title, tags, folder, updated timestamp, URL); rich details deferred to future P3 stories.
+- Q: Should the agent retry failed MCP calls or fail immediately? → A: Fail-fast on first error with clear message; no automatic retries to keep response time <5s and failure causes obvious.
 
 ## Assumptions
 
-- Grafana MCP server is available and running (either locally or as a configured Docker container).
-- The language model (OpenAI or Ollama) is accessible and has sufficient context to interpret simple dashboard queries.
+- **Grafana MCP server is external and pre-running**: The agent expects the Grafana MCP server to be started separately (either manually during development or by deployment infrastructure in production). The agent validates connectivity at startup and returns a clear error if unreachable. The agent does NOT spawn or manage the MCP server process.
+- **Primary LLM is OpenAI (gpt-4)**: The system is designed and tested with OpenAI's gpt-4 model as the default LLM. Ollama (local models) is supported as an alternative via configuration (`LLM_PROVIDER` environment variable) but is not part of primary test coverage. Teams can use Ollama by setting `LLM_PROVIDER=ollama` and `LLM_MODEL=mistral` (or similar), but this is treated as community-supported.
+- **Credential logging policy**: Sensitive fields (GRAFANA_PASSWORD, LLM API keys, dashboard descriptions) are redacted in normal operation logs. Full context including credentials MAY be logged only when errors occur to enable debugging; such error logs must not be exposed to end users without review.
+- **MCP server availability assumption**: The Grafana MCP server is expected to be available and reachable at startup. If the server becomes unavailable during an interaction, the agent fails immediately with a clear error message and does NOT retry. This keeps response times predictable (<5s) and makes failure causes obvious.
 - Users have basic familiarity with natural language query interfaces (chat-style input).
 - The single-node LangGraph agent is sufficient for MVP; multi-node complexity can be deferred to future iterations.
 - Reasonable defaults for Grafana URL, username, password, and org ID are documented for local development environments.
