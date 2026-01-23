@@ -19,35 +19,17 @@ Design the constitution around the following principles:
 
 **Command**: `/speckit.specify`
 
-### Define the First Capability
-
-Enable engineers to query system metrics using plain English instead of manually writing queries or navigating dashboards.
-
 ### Goal
 
-Enable engineers to query system metrics using plain English instead of manually writing queries or navigating dashboards.
-
-This is the initial, foundational capability and should be intentionally minimal. More advanced behavior will be added incrementally in later iterations.
-
-### User Story
-
-As an engineer, I want to ask questions about system metrics in natural language, so that I can quickly understand system behavior without dealing with low-level query syntax.
+Enable engineers to successfully interact with grafana mcp via a single node agent for basic questions like give me list of all dashboards.
 
 ### Example Questions
 
-- "Show CPU usage for the last hour"
-- "What was memory usage yesterday?"
-- "How did request latency change over time?"
-
-### Functional Requirements
-
-- Accept a natural language question from the user
-- Interpret the question as a request for metric data
-- Retrieve the relevant metric data from the observability system
-- Return the requested metric data to the user in a readable form
+- "Show me all dashboards"
 
 ### Non-Goals
 
+- No metrics querying now.
 - No anomaly detection
 - No explanations or interpretations of metric behavior
 - No recommendations or corrective actions
@@ -60,31 +42,16 @@ As an engineer, I want to ask questions about system metrics in natural language
 - The capability must not require changes to metric ingestion or storage
 - The experience should be simple enough for someone cloning the repository to try without prior context
 
-### Acceptance Criteria
-
-- A user can ask multiple metric-related questions using natural language
-- The returned metric data matches what is shown in existing dashboards
-- The interaction completes in a single request-response cycle
-- The capability can be demonstrated end-to-end by running the project locally
-
 ---
 
 ## Implementation Plan
 
 **Command**: `/speckit.plan`
 
-### Overview
-
-Implement a minimal, end-to-end flow that allows a user to ask natural language questions about metrics and receive raw metric data or simple summaries in response.
-
-This plan intentionally prioritizes correctness, clarity, and extensibility over intelligence or autonomy.
-
 ### High-Level Flow
 
 1. User submits a natural language query via a chat-style interface
 2. The query is routed through a simple agent workflow
-3. The agent translates the query into a metrics query
-4. The metrics query is executed against the existing observability stack
 5. Results are returned to the user in a readable format
 
 ### User Interface
@@ -96,28 +63,12 @@ This plan intentionally prioritizes correctness, clarity, and extensibility over
 ### Agent Architecture
 
 - Use LangGraph to define the agent workflow
+- Limit to create one node agent in langgraph
 - Implement the agent as a single-node graph
 - The single node is responsible for:
   - Receiving the user query
   - Calling the language model to interpret the query
-  - Invoking the metrics query tool
   - Formatting and returning the response
-
-### Language Model Integration
-
-- Use LangChain to manage interaction with the language model
-- The language model is used only to:
-  - Translate natural language into structured metric query parameters
-  - Perform minimal formatting of results for readability
-- No multi-step reasoning, planning, or memory should be introduced
-
-### Metrics Query Execution
-
-- Implement a LangChain tool that:
-  - Accepts structured query parameters
-  - Communicates with the existing Grafana MCP server
-  - Fetches metric data from the observability pipeline
-- The tool returns raw time-series data or simple aggregates
 
 ### Configuration
 
@@ -176,6 +127,7 @@ We add support for both OpenAI and Ollama.
 - No recommendations or actions
 - No persistence of state or memory between interactions
 - No multi-node agent graphs
+- No complicated agent runs
 
 ### Extensibility Considerations
 
@@ -189,6 +141,8 @@ We add support for both OpenAI and Ollama.
 - LangChain-based metrics query tool
 - Configurable integration with Grafana MCP
 - End-to-end demo runnable locally
+- The code should be fully observable via langsmith api calls.
+- Integrate with langgraph cli so I can see my langgraph with langgraph dev
 
 ---
 
