@@ -1,50 +1,47 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Observability Agent Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Purpose: Educational Exploration of Agentic Applications
+The project exists primarily to learn how to build agentic applications and explore their practical use in observability. All decisions and implementations must serve this learning goal. Features are justified only insofar as they advance understanding of agent-based systems and their observability applications.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Minimalism: Core Functionality Only
+Implement only essential features required for learning and MVP functionality. No autonomous decision-making, insights generation, or unsolicited actions. The agent responds to explicit user queries with straightforward results—nothing more. Avoid feature creep; defer enhancements to future iterations.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Extensibility: Safe Foundation for Growth
+Design code with future expansion in mind without over-engineering. Establish clear interfaces and separation of concerns that allow new nodes, tools, and capabilities to be added without refactoring core logic. LangGraph's single-node architecture should be extensible to multi-node graphs in future versions.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Accuracy & Clarity: Real Data, Easy Understanding
+All outputs must reflect actual data from the observability stack with zero fabrication or inference. Present results in clear, human-readable formats. Avoid ambiguous or partial information; surface clear error messages when queries cannot be fulfilled.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. For Education & Learning: Pragmatic Testing
+Testing is valuable but secondary to learning core features. Write tests for critical paths and integrations, but do not mandate test-first or comprehensive coverage if it impedes learning velocity. Focus on understanding how agentic workflows, LangGraph, and Grafana MCP integration work.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### VI. Simplistic Directory Structure: Nest Only When Necessary
+Create nested code directories only when absolute necessity demands it. Prefer flat structures for single components. Use simple groupings (`src/`, `tests/`) only when the project grows to justify them. Avoid organizational hierarchies that add cognitive overhead.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Implementation Constraints
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- The capability must operate on top of the existing observability stack (Grafana, metrics storage) with no modifications to metric ingestion or storage.
+- No credentialed data or endpoints should be hardcoded; all configuration must be provided via environment variables or config files with secure defaults for local development.
+- The interface must be simple enough for someone cloning the repository to run without prior context.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development & Deployment Expectations
+
+- All code must be fully observable via LangSmith API calls for inspection and debugging.
+- Integration with LangGraph CLI is mandatory—developers must be able to use `langgraph dev` to inspect agent workflows.
+- Configuration for Grafana MCP server connection (endpoint, credentials, org ID) must be externalized and documented.
+- Error handling must be graceful: invalid or unsupported queries return clear error messages; the agent does not attempt automatic correction or inference beyond the user's explicit request.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+**Amendment Procedure**: Constitution amendments require documentation of the change rationale, list of affected principles, and validation that all `.specify/templates/` files remain aligned with the updated principles.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Versioning Policy**: Constitution version follows semantic versioning:
+- **MAJOR**: Principle removals or backward-incompatible redefinitions.
+- **MINOR**: New principles or material expansions to guidance.
+- **PATCH**: Clarifications, wording refinements, or non-semantic updates.
+
+**Compliance Review**: All PRs must verify that code adheres to these six core principles. Complexity or deviations must be justified with reference to a specific principle's rationale. Templates (`plan.md`, `spec.md`, `tasks.md`) must be reviewed after each constitution amendment to ensure alignment.
+
+**Version**: 1.0.0 | **Ratified**: 2026-01-23 | **Last Amended**: 2026-01-23
