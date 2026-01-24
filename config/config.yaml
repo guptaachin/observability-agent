@@ -1,0 +1,33 @@
+# Optional Grafana Agent Configuration File
+# Use either this file OR environment variables (.env)
+# Environment variables take precedence over this file
+
+grafana:
+  url: http://localhost:3000
+  username: mopadmin
+  password: moppassword
+  org_id: 1
+
+llm:
+  # Provider: openai or ollama
+  provider: ollama
+  
+  # OpenAI configuration
+  openai:
+    api_key: ${OPENAI_API_KEY}  # Set via environment variable
+    model: gpt-4-turbo
+  
+  # Ollama configuration (local LLM)
+  ollama:
+    base_url: http://localhost:11434
+    model: llama2
+
+# Logging configuration
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR
+  format: plain  # plain or json
+
+# Agent configuration
+agent:
+  timeout: 30  # Query timeout in seconds
+  max_results: 100  # Maximum dashboards to return

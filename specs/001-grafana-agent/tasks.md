@@ -13,14 +13,14 @@
 
 **Purpose**: Project initialization and core dependencies
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 [P] Initialize Python 3.10+ project with pyproject.toml or setup.py
-- [ ] T003 [P] Create core package structure (src/, tests/, config/)
-- [ ] T004 [P] Setup virtual environment and dependency management (.python-version, requirements.txt)
-- [ ] T005 [P] Create config/.env.example template with Grafana and LLM defaults
-- [ ] T006 [P] Create config/config.yaml template for optional YAML configuration
-- [ ] T007 [P] Initialize pytest testing framework with conftest.py in tests/
-- [ ] T008 Configure logging (logging.config or simple logging setup in src/config.py)
+- [X] T001 Create project structure per implementation plan
+- [X] T002 [P] Initialize Python 3.10+ project with pyproject.toml or setup.py
+- [X] T003 [P] Create core package structure (src/, tests/, config/)
+- [X] T004 [P] Setup virtual environment and dependency management (.python-version, requirements.txt)
+- [X] T005 [P] Create config/.env.example template with Grafana and LLM defaults
+- [X] T006 [P] Create config/config.yaml template for optional YAML configuration
+- [X] T007 [P] Initialize pytest testing framework with conftest.py in tests/
+- [X] T008 Configure logging (logging.config or simple logging setup in src/config.py)
 
 **Checkpoint**: Run `python -m pytest tests/ --collect-only` → confirms pytest is accessible
 
@@ -30,14 +30,14 @@
 
 **Purpose**: Core infrastructure that MUST be complete before any user story implementation
 
-- [ ] T009 Implement configuration management in src/config.py (load from env, YAML, defaults; pydantic model)
-- [ ] T010 [P] Implement LLM provider initialization in src/llm.py (OpenAI + Ollama support; configurable at runtime)
-- [ ] T011 [P] Implement Grafana MCP tool wrapper in src/tools.py (GrafanaMCPTool class with list_dashboards, search_dashboards, get_dashboard methods)
-- [ ] T012 Implement error handling utilities in src/tools.py (GrafanaError, GrafanaConnectionError, GrafanaAuthError, GrafanaDataError exception hierarchy)
-- [ ] T013 Implement single-node LangGraph agent structure in src/agent.py (create_agent() function returns compiled graph)
-- [ ] T014 Implement LLM system prompt in src/agent.py (constraints: dashboard retrieval only, no analysis/insights/recommendations)
-- [ ] T015 Implement Gradio chat interface foundation in src/main.py (ChatInterface wrapper, message handling)
-- [ ] T016 Create integration test fixtures in tests/conftest.py (mock Grafana MCP responses, mock LLM responses)
+- [X] T009 Implement configuration management in src/config.py (load from env, YAML, defaults; pydantic model)
+- [X] T010 [P] Implement LLM provider initialization in src/llm.py (OpenAI + Ollama support; configurable at runtime)
+- [X] T011 [P] Implement Grafana MCP tool wrapper in src/tools.py (GrafanaMCPTool class with list_dashboards, search_dashboards, get_dashboard methods)
+- [X] T012 Implement error handling utilities in src/tools.py (GrafanaError, GrafanaConnectionError, GrafanaAuthError, GrafanaDataError exception hierarchy)
+- [X] T013 Implement single-node LangGraph agent structure in src/agent.py (create_agent() function returns compiled graph)
+- [X] T014 Implement LLM system prompt in src/agent.py (constraints: dashboard retrieval only, no analysis/insights/recommendations)
+- [X] T015 Implement Gradio chat interface foundation in src/main.py (ChatInterface wrapper, message handling)
+- [X] T016 Create integration test fixtures in tests/conftest.py (mock Grafana MCP responses, mock LLM responses)
 
 **Checkpoint**: Run `python -c "from src.config import load_config; from src.llm import create_llm; from src.tools import GrafanaMCPTool; from src.agent import create_agent"` → all imports succeed
 
@@ -57,14 +57,14 @@
 
 ### Implementation Tasks
 
-- [ ] T017 [P] [US1] Implement list_dashboards() method in src/tools.py (calls MCP server; returns List[DashboardMetadata])
-- [ ] T018 [US1] Implement agent node logic in src/agent.py (accept query → invoke LLM → interpret intent as "list_dashboards" → call tool → format response)
-- [ ] T019 [US1] Implement response formatting in src/agent.py (convert List[Dashboard] to numbered list with titles; handle empty list case)
-- [ ] T020 [P] [US1] Implement Gradio chat integration in src/main.py (wire agent to ChatInterface; handle input/output)
-- [ ] T021 [US1] Test "Show me all dashboards" end-to-end in tests/test_agent.py (mock Grafana MCP; verify response format)
-- [ ] T022 [US1] Test empty dashboard list in tests/test_agent.py (verify "No dashboards found" message)
-- [ ] T023 [US1] Test query interpretation in tests/test_agent.py (verify LLM correctly interprets "What dashboards are available?" as list query)
-- [ ] T024 [US1] Create demo script (demo.py) that runs agent with sample Grafana instance for manual testing
+- [X] T017 [P] [US1] Implement list_dashboards() method in src/tools.py (calls MCP server; returns List[DashboardMetadata])
+- [X] T018 [US1] Implement agent node logic in src/agent.py (accept query → invoke LLM → interpret intent as "list_dashboards" → call tool → format response)
+- [X] T019 [US1] Implement response formatting in src/agent.py (convert List[Dashboard] to numbered list with titles; handle empty list case)
+- [X] T020 [P] [US1] Implement Gradio chat integration in src/main.py (wire agent to ChatInterface; handle input/output)
+- [X] T021 [US1] Test "Show me all dashboards" end-to-end in tests/test_agent.py (mock Grafana MCP; verify response format)
+- [X] T022 [US1] Test empty dashboard list in tests/test_agent.py (verify "No dashboards found" message)
+- [X] T023 [US1] Test query interpretation in tests/test_agent.py (verify LLM correctly interprets "What dashboards are available?" as list query)
+- [X] T024 [US1] Create demo script (demo.py) that runs agent with sample Grafana instance for manual testing
 
 **Checkpoint**: `python demo.py` → Gradio UI responds to "Show me all dashboards" with formatted list; all T017-T023 tests pass
 
