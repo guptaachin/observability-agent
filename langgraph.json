@@ -1,0 +1,7 @@
+{
+  "dependencies": ["./src"],
+  "graphs": {
+    "dashboard_discovery": "./src/agent.py:build_agent"
+  },
+  "env": "./.env"
+}

@@ -398,3 +398,41 @@ def agent_invoke(state: Dict[str, Any], agent) -> Dict[str, Any]:
         Updated state with response
     """
     return asyncio.run(agent.ainvoke(state))
+
+
+async def build_agent():
+    """
+    Build agent for LangGraph dev server.
+    
+    This is the entry point for `langgraph dev` command.
+    It loads configuration, initializes components, and returns compiled graph.
+    
+    Returns:
+        Compiled LangGraph graph for dashboard discovery
+        
+    Usage (in langgraph.json):
+        "graphs": {
+            "dashboard_discovery": "./src/agent.py:build_agent"
+        }
+    """
+    from src.config import load_config
+    from src.llm import create_llm_from_app_config
+    from src.tools import create_grafana_tool
+    
+    # Load configuration from environment
+    config = load_config()
+    logger.info(f"Loaded config for LLM provider: {config.llm.provider}")
+    
+    # Initialize LLM
+    llm = create_llm_from_app_config(config)
+    logger.info("LLM initialized")
+    
+    # Initialize Grafana tool
+    grafana_tool = await create_grafana_tool(config.grafana)
+    logger.info("Grafana tool initialized")
+    
+    # Create and return agent graph
+    graph = await create_agent(config, llm, grafana_tool)
+    logger.info("Agent graph created for LangGraph dev")
+    
+    return graph
