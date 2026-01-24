@@ -113,7 +113,6 @@ class GrafanaAgentUI:
                 "When was the API dashboard last updated?",
                 "What dashboards are available?",
             ],
-            theme=gr.themes.Default(),
         )
 
         # Launch
