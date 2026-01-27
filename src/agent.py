@@ -18,20 +18,30 @@ SYSTEM_PROMPT = """You are a Grafana dashboard assistant. You can ONLY:
 
 You CANNOT analyze metrics, make predictions, or modify dashboards.
 
-When the user asks about dashboards, extract the search term if any.
-Respond in this exact format:
-SEARCH: <term or empty if listing all>
+When the user asks about dashboards, extract search keywords.
+Think about what dashboard NAMES might match the user's intent:
+- "system health" -> node, exporter, system, health, cpu, memory
+- "API monitoring" -> api, service, http, request
+- "database" -> db, postgres, mysql, redis, database
+
+Respond with ONE of these formats:
+
+1. For searching (provide multiple keywords separated by |):
+SEARCH: keyword1|keyword2|keyword3
+
+2. For listing all:
+SEARCH:
+
+3. For out-of-scope requests:
+OUT_OF_SCOPE: <brief explanation>
 
 Examples:
 - "Show me all dashboards" -> SEARCH:
 - "Find dashboards with metrics" -> SEARCH: metrics
 - "Is there a dashboard named node?" -> SEARCH: node
-- "Do we have dashboards to check system health?" -> SEARCH: system health
-- "Dashboards for API monitoring" -> SEARCH: API monitoring
-- "What dashboards are available?" -> SEARCH:
-
-If the request is out of scope (analyzing metrics, predictions, etc), respond with:
-OUT_OF_SCOPE: <brief explanation>"""
+- "Do we have dashboards to check system health?" -> SEARCH: node|system|health|exporter|cpu|memory
+- "Dashboards for API monitoring" -> SEARCH: api|service|http
+- "What dashboards are available?" -> SEARCH:"""
 
 
 def format_dashboards(dashboards: list[Dashboard]) -> str:
@@ -72,15 +82,30 @@ def create_agent(config: Config, mcp: GrafanaMCP):
             return {**state, "response": "I can only list or search dashboards. " + response_text.split(":", 1)[1].strip()}
         
         if response_text.startswith("SEARCH:"):
-            search_term = response_text.split(":", 1)[1].strip()
+            search_terms = response_text.split(":", 1)[1].strip()
         else:
-            # Fallback: treat whole response as search term or empty
-            search_term = ""
+            search_terms = ""
         
-        # Query Grafana
+        # Query Grafana - try multiple keywords if provided
         try:
-            dashboards = await mcp.list_dashboards(search_term)
-            response = format_dashboards(dashboards)
+            all_dashboards = []
+            seen_uids = set()
+            
+            if "|" in search_terms:
+                # Multiple keywords - search each
+                for term in search_terms.split("|"):
+                    term = term.strip()
+                    if term:
+                        dashboards = await mcp.list_dashboards(term)
+                        for d in dashboards:
+                            if d.uid not in seen_uids:
+                                all_dashboards.append(d)
+                                seen_uids.add(d.uid)
+            else:
+                # Single term or empty (list all)
+                all_dashboards = await mcp.list_dashboards(search_terms)
+            
+            response = format_dashboards(all_dashboards)
             return {**state, "response": response}
         except Exception as e:
             logger.error(f"Error: {e}")
