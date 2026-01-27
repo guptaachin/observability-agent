@@ -4,9 +4,9 @@ import asyncio
 import logging
 import gradio as gr
 
-from src.config import load_config
-from src.tools import GrafanaMCP
-from src.agent import create_agent
+from config import load_config
+from tools import GrafanaMCP
+from agent import create_agent
 
 
 logging.basicConfig(level=logging.INFO)
