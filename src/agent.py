@@ -12,11 +12,10 @@ The agent is a single-node graph (no branching, looping, or multi-hop reasoning)
 """
 
 import logging
-from typing import Union, Any, Dict
+from typing import Any, Dict
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-from langchain_community.chat_models import ChatOllama
 from src.config import AppConfig
 from src.tools import GrafanaMCPTool, GrafanaConnectionError, GrafanaDataError
 
@@ -73,7 +72,7 @@ class AgentState(dict):
 
 async def agent_node(
     state: Dict[str, Any],
-    llm: Union[ChatOpenAI, ChatOllama],
+    llm: ChatOpenAI,
     grafana_tool: GrafanaMCPTool,
     timeout: int = 30,
 ) -> Dict[str, Any]:
@@ -346,7 +345,7 @@ def _format_dashboard_list(dashboards: list) -> str:
 
 async def create_agent(
     config: AppConfig,
-    llm: Union[ChatOpenAI, ChatOllama],
+    llm: ChatOpenAI,
     grafana_tool: GrafanaMCPTool,
 ) -> Any:
     """
@@ -421,7 +420,7 @@ async def build_agent():
     
     # Load configuration from environment
     config = load_config()
-    logger.info(f"Loaded config for LLM provider: {config.llm.provider}")
+    logger.info(f"Loaded config for LLM model: {config.llm.model}")
     
     # Initialize LLM
     llm = create_llm_from_app_config(config)

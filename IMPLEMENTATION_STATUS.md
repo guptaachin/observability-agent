@@ -39,17 +39,16 @@ Core project infrastructure initialized:
 Core infrastructure modules implemented:
 
 #### [src/config.py](src/config.py) (257 lines)
-- Pydantic models: GrafanaConfig, LLMConfig (OpenAI/Ollama), AgentConfig, LoggingConfig, AppConfig
+- Pydantic models: GrafanaConfig, LLMConfig (OpenAI), AgentConfig, LoggingConfig, AppConfig
 - Configuration priority: env vars > .env > YAML > defaults
-- Validation: URL format, org_id positive integer, provider selection
+- Validation: URL format, org_id positive integer
 - `load_config()` function with environment variable merging
 - `setup_logging()` function for log configuration
 
 #### [src/llm.py](src/llm.py) (136 lines)
 - LLM provider abstraction via LangChain
 - OpenAI support: ChatOpenAI with gpt-4-turbo, temperature=0.0
-- Ollama support: ChatOllama with local server, llama2 default
-- `create_llm()` factory for provider-agnostic initialization
+- `create_llm()` factory for initialization
 - `create_llm_from_app_config()` convenience wrapper
 
 #### [src/tools.py](src/tools.py) (322 lines)
@@ -204,7 +203,7 @@ Exception → "Unexpected error occurred..."
 | Feature | Status | Details |
 |---------|--------|---------|
 | Configuration Management | ✅ | Env/YAML/defaults with validation |
-| LLM Support | ✅ | OpenAI (gpt-4-turbo) + Ollama (llama2) |
+| LLM Support | ✅ | OpenAI (gpt-4-turbo) |
 | Grafana Tool Wrapper | ✅ | MCP-ready with list/search/get methods |
 | Single-Node Agent | ✅ | Query → Intent → Tool → Response pipeline |
 | Gradio UI | ✅ | Chat interface on localhost:7860 |
@@ -306,7 +305,6 @@ Not started (MCP real integration, documentation, deployment)
 langgraph          # Agentic orchestration
 langchain          # LLM abstractions
 langchain-openai   # OpenAI integration
-langchain-community # Ollama + other providers
 pydantic           # Configuration validation
 gradio             # Web UI
 python-dotenv      # .env file support

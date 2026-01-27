@@ -9,18 +9,9 @@ grafana:
   org_id: 1
 
 llm:
-  # Provider: openai or ollama
-  provider: ollama
-  
   # OpenAI configuration
-  openai:
-    api_key: ${OPENAI_API_KEY}  # Set via environment variable
-    model: gpt-4-turbo
-  
-  # Ollama configuration (local LLM)
-  ollama:
-    base_url: http://localhost:11434
-    model: llama2
+  api_key: ${OPENAI_API_KEY}  # Set via environment variable
+  model: gpt-4-turbo
 
 # Logging configuration
 logging:

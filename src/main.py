@@ -45,7 +45,7 @@ class GrafanaAgentUI:
         try:
             # Create LLM
             self.llm = create_llm_from_app_config(self.config)
-            logger.info(f"LLM initialized: {self.config.llm.provider}")
+            logger.info(f"LLM initialized: {self.config.llm.model}")
 
             # Create Grafana tool (sync wrapper)
             self.grafana_tool = asyncio.run(

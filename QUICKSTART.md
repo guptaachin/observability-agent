@@ -37,12 +37,8 @@ export GRAFANA_URL=http://localhost:3000
 export GRAFANA_USERNAME=admin
 export GRAFANA_PASSWORD=admin
 export GRAFANA_ORG_ID=1
-export LLM_PROVIDER=openai  # or ollama
 export OPENAI_API_KEY=sk-...
 export OPENAI_MODEL=gpt-4-turbo
-# OR for Ollama:
-export OLLAMA_BASE_URL=http://localhost:11434
-export OLLAMA_MODEL=llama2
 ```
 
 ### Via .env File
@@ -104,7 +100,7 @@ The agent understands:
 ```
 src/
 ├── config.py      # Configuration management
-├── llm.py         # LLM provider (OpenAI/Ollama)
+├── llm.py         # OpenAI LLM provider
 ├── tools.py       # Grafana MCP tool wrapper
 ├── agent.py       # Single-node LangGraph agent
 └── main.py        # Gradio chat UI
@@ -125,11 +121,10 @@ demo.py            # Demo script with sample queries
 ### Configuration ([src/config.py](src/config.py))
 - Loads from: environment variables → .env file → config.yaml → defaults
 - Validates all settings with pydantic
-- Supports OpenAI and Ollama LLM providers
+- Supports OpenAI LLM
 
 ### LLM Support ([src/llm.py](src/llm.py))
 - **OpenAI**: gpt-4-turbo (deterministic, temperature=0.0)
-- **Ollama**: Local llama2 model support
 
 ### Grafana Tools ([src/tools.py](src/tools.py))
 - `list_dashboards()`: Get all dashboards
@@ -185,7 +180,7 @@ pip list | grep -E "langgraph|pytest|pydantic"
 ### Gradio UI Not Starting
 Ensure:
 1. Grafana is running and accessible at the configured URL
-2. LLM API key is set (OPENAI_API_KEY or Ollama is running)
+2. OPENAI_API_KEY environment variable is set
 3. Firewall allows localhost:7860
 
 ## Architecture

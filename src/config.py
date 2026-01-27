@@ -47,34 +47,11 @@ class GrafanaConfig(BaseModel):
         return v
 
 
-class OpenAIConfig(BaseModel):
+class LLMConfig(BaseModel):
     """OpenAI LLM configuration."""
 
     api_key: str = Field(description="OpenAI API key")
     model: str = Field(default="gpt-4-turbo", description="Model name")
-
-
-class OllamaConfig(BaseModel):
-    """Ollama LLM configuration (local)."""
-
-    base_url: str = Field(default="http://localhost:11434", description="Ollama server URL")
-    model: str = Field(default="llama2", description="Model name")
-
-
-class LLMConfig(BaseModel):
-    """LLM provider configuration."""
-
-    provider: Literal["openai", "ollama"] = Field(default="ollama", description="LLM provider")
-    openai: Optional[OpenAIConfig] = Field(default=None, description="OpenAI config")
-    ollama: Optional[OllamaConfig] = Field(default=None, description="Ollama config")
-
-    @field_validator("provider")
-    @classmethod
-    def validate_provider(cls, v: str) -> str:
-        """Validate provider is supported."""
-        if v not in ("openai", "ollama"):
-            raise ValueError("provider must be 'openai' or 'ollama'")
-        return v
 
 
 class AgentConfig(BaseModel):
@@ -144,7 +121,8 @@ def load_config(config_file: Optional[str] = None) -> AppConfig:
             "org_id": int(os.getenv("GRAFANA_ORG_ID", "1")),
         },
         "llm": {
-            "provider": os.getenv("LLM_PROVIDER", "ollama"),
+            "api_key": os.getenv("OPENAI_API_KEY", ""),
+            "model": os.getenv("OPENAI_MODEL", "gpt-4-turbo"),
         },
         "agent": {
             "timeout": int(os.getenv("AGENT_TIMEOUT", "30")),
@@ -155,21 +133,11 @@ def load_config(config_file: Optional[str] = None) -> AppConfig:
         },
     }
 
-    # Configure LLM based on provider
-    if config_dict["llm"]["provider"] == "openai":
-        config_dict["llm"]["openai"] = {
-            "api_key": os.getenv("OPENAI_API_KEY", ""),
-            "model": os.getenv("OPENAI_MODEL", "gpt-4-turbo"),
-        }
-        if not config_dict["llm"]["openai"]["api_key"]:
-            raise ValueError(
-                "OPENAI_API_KEY environment variable required for OpenAI provider"
-            )
-    else:  # ollama
-        config_dict["llm"]["ollama"] = {
-            "base_url": os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
-            "model": os.getenv("OLLAMA_MODEL", "llama2"),
-        }
+    # Validate OpenAI API key
+    if not config_dict["llm"]["api_key"]:
+        raise ValueError(
+            "OPENAI_API_KEY environment variable required"
+        )
 
     # Try to load from YAML config file if provided or exists
     if config_file is None:
@@ -193,7 +161,7 @@ def load_config(config_file: Optional[str] = None) -> AppConfig:
     # Validate and create config object
     try:
         config = AppConfig(**config_dict)
-        logger.info(f"Configuration loaded successfully (provider: {config.llm.provider})")
+        logger.info(f"Configuration loaded successfully (model: {config.llm.model})")
         return config
     except Exception as e:
         logger.error(f"Configuration validation failed: {e}")
@@ -233,5 +201,5 @@ if __name__ == "__main__":
     # Test configuration loading
     config = load_config()
     print(f"Grafana: {config.grafana.url}")
-    print(f"LLM Provider: {config.llm.provider}")
+    print(f"LLM Model: {config.llm.model}")
     print(f"Agent Timeout: {config.agent.timeout}s")

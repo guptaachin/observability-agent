@@ -88,11 +88,8 @@ def test_config():
             "org_id": 1,
         },
         "llm": {
-            "provider": "ollama",
-            "ollama": {
-                "base_url": "http://localhost:11434",
-                "model": "llama2",
-            },
+            "api_key": "test-openai-key",
+            "model": "gpt-4-turbo",
         },
         "agent": {
             "timeout": 30,

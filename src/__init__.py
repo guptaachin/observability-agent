@@ -8,7 +8,7 @@ Key components:
 - Agent: Single-node LangGraph graph for query processing
 - Tools: Grafana MCP server wrapper for dashboard retrieval
 - Config: Environment variable and YAML configuration management
-- LLM: OpenAI and Ollama LLM provider support
+- LLM: OpenAI LLM support
 - UI: Gradio chat interface for local demo
 """
 
