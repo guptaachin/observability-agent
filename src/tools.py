@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from mcp import ClientSession
 from mcp.client.sse import sse_client
 
-from src.config import Config
+from config import Config
 
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class GrafanaMCP:
 
 if __name__ == "__main__":
     import asyncio
-    from src.config import load_config
+    from config import load_config
     
     async def main():
         config = load_config()
