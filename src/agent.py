@@ -13,11 +13,25 @@ logger = logging.getLogger(__name__)
 
 
 SYSTEM_PROMPT = """You are a Grafana dashboard assistant. You can ONLY:
-- List dashboards
-- Search dashboards by name/tag
+- List all dashboards
+- Search dashboards by name/tag/topic
 
 You CANNOT analyze metrics, make predictions, or modify dashboards.
-Be concise. Use plain text, no markdown."""
+
+When the user asks about dashboards, extract the search term if any.
+Respond in this exact format:
+SEARCH: <term or empty if listing all>
+
+Examples:
+- "Show me all dashboards" -> SEARCH:
+- "Find dashboards with metrics" -> SEARCH: metrics
+- "Is there a dashboard named node?" -> SEARCH: node
+- "Do we have dashboards to check system health?" -> SEARCH: system health
+- "Dashboards for API monitoring" -> SEARCH: API monitoring
+- "What dashboards are available?" -> SEARCH:
+
+If the request is out of scope (analyzing metrics, predictions, etc), respond with:
+OUT_OF_SCOPE: <brief explanation>"""
 
 
 def format_dashboards(dashboards: list[Dashboard]) -> str:
@@ -35,33 +49,6 @@ def format_dashboards(dashboards: list[Dashboard]) -> str:
     return "\n".join(lines)
 
 
-async def process_query(query: str, mcp: GrafanaMCP) -> str:
-    """Process a dashboard query."""
-    if not query.strip():
-        return "Please ask about dashboards."
-    
-    q = query.lower()
-    
-    # Simple intent detection
-    if any(w in q for w in ["search", "filter", "with", "find", "matching"]):
-        # Extract search term (after "with", in quotes, or last word)
-        term = ""
-        if "'" in query:
-            term = query.split("'")[1]
-        elif '"' in query:
-            term = query.split('"')[1]
-        elif "with" in q:
-            term = q.split("with", 1)[1].replace("in the name", "").strip()
-        else:
-            term = query.split()[-1]
-        
-        dashboards = await mcp.list_dashboards(term)
-    else:
-        dashboards = await mcp.list_dashboards()
-    
-    return format_dashboards(dashboards)
-
-
 def create_agent(config: Config, mcp: GrafanaMCP):
     """Create LangGraph agent."""
     llm = create_llm(config)
@@ -72,19 +59,28 @@ def create_agent(config: Config, mcp: GrafanaMCP):
         if not query.strip():
             return {**state, "response": "Please provide a query about dashboards."}
         
-        # Check with LLM if request is in scope
+        # Let LLM extract search intent
         messages = [
             SystemMessage(content=SYSTEM_PROMPT),
-            HumanMessage(content=f"Is this request in scope? Answer YES or NO, then respond appropriately: {query}"),
+            HumanMessage(content=query),
         ]
         llm_response = await llm.ainvoke(messages)
+        response_text = llm_response.content.strip()
         
-        if "cannot" in llm_response.content.lower() or "no" in llm_response.content.lower()[:10]:
-            return {**state, "response": "I can only list or search dashboards. I cannot analyze metrics or make predictions."}
+        # Parse LLM response
+        if response_text.startswith("OUT_OF_SCOPE:"):
+            return {**state, "response": "I can only list or search dashboards. " + response_text.split(":", 1)[1].strip()}
         
-        # Process the query
+        if response_text.startswith("SEARCH:"):
+            search_term = response_text.split(":", 1)[1].strip()
+        else:
+            # Fallback: treat whole response as search term or empty
+            search_term = ""
+        
+        # Query Grafana
         try:
-            response = await process_query(query, mcp)
+            dashboards = await mcp.list_dashboards(search_term)
+            response = format_dashboards(dashboards)
             return {**state, "response": response}
         except Exception as e:
             logger.error(f"Error: {e}")
