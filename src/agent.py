@@ -108,7 +108,6 @@ async def agent_node(
             SystemMessage(content=SYSTEM_PROMPT.format(query=query)),
             HumanMessage(content=query),
         ]
-
         llm_response = await llm.ainvoke(messages)
         response_text = llm_response.content
 
@@ -368,7 +367,7 @@ async def create_agent(
             state,
             llm=llm,
             grafana_tool=grafana_tool,
-            timeout=config.agent.timeout,
+            timeout=config.agent_timeout,
         )
 
     graph.add_node("agent", agent_wrapper)
@@ -420,14 +419,14 @@ async def build_agent():
     
     # Load configuration from environment
     config = load_config()
-    logger.info(f"Loaded config for LLM model: {config.llm.model}")
+    logger.info(f"Loaded config for LLM model: {config.openai_model}")
     
     # Initialize LLM
     llm = create_llm_from_app_config(config)
     logger.info("LLM initialized")
     
     # Initialize Grafana tool
-    grafana_tool = await create_grafana_tool(config.grafana)
+    grafana_tool = await create_grafana_tool(config)
     logger.info("Grafana tool initialized")
     
     # Create and return agent graph

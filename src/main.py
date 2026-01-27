@@ -21,16 +21,12 @@ logger = logging.getLogger(__name__)
 class GrafanaAgentUI:
     """Wrapper for Gradio chat interface."""
 
-    def __init__(self, config_file: str = None):
+    def __init__(self):
         """
         Initialize agent UI.
-
-        Args:
-            config_file: Optional path to config YAML file
         """
         # Load configuration
-        self.config = load_config(config_file)
-        setup_logging(self.config)
+        self.config = load_config()
 
         logger.info("Initializing Grafana Agent UI...")
 
@@ -45,11 +41,11 @@ class GrafanaAgentUI:
         try:
             # Create LLM
             self.llm = create_llm_from_app_config(self.config)
-            logger.info(f"LLM initialized: {self.config.llm.model}")
+            logger.info(f"LLM initialized: {self.config.openai_model}")
 
             # Create Grafana tool (sync wrapper)
             self.grafana_tool = asyncio.run(
-                create_grafana_tool(self.config.grafana)
+                create_grafana_tool(self.config)
             )
             logger.info("Grafana tool initialized")
 
@@ -124,14 +120,13 @@ class GrafanaAgentUI:
         )
 
 
-def main(config_file: str = None):
+def main():
     """
     Main entry point for Gradio UI.
-
-    Args:
-        config_file: Optional path to config YAML file
     """
-    ui = GrafanaAgentUI(config_file)
+    config = load_config()
+    setup_logging(config.log_level)
+    ui = GrafanaAgentUI()
     ui.launch()
 
 

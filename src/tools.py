@@ -12,7 +12,7 @@ import asyncio
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from datetime import datetime
-from src.config import GrafanaConfig
+from src.config import AppConfig
 
 
 logger = logging.getLogger(__name__)
@@ -81,16 +81,16 @@ class GrafanaMCPTool:
     - Converting to internal data structures
     """
 
-    def __init__(self, config: GrafanaConfig):
+    def __init__(self, config: AppConfig):
         """
         Initialize Grafana MCP tool.
 
         Args:
-            config: GrafanaConfig with connection details
+            config: AppConfig with Grafana connection details
         """
         self.config = config
         self.mcp_client = None
-        logger.info(f"GrafanaMCPTool initialized for {config.url}")
+        logger.info(f"GrafanaMCPTool initialized for {config.grafana_url}")
 
     async def _init_mcp_connection(self) -> None:
         """
@@ -226,12 +226,12 @@ class GrafanaMCPTool:
         return []
 
 
-async def create_grafana_tool(config: GrafanaConfig) -> GrafanaMCPTool:
+async def create_grafana_tool(config: AppConfig) -> GrafanaMCPTool:
     """
     Factory function to create and initialize GrafanaMCPTool.
 
     Args:
-        config: GrafanaConfig with connection details
+        config: AppConfig with Grafana connection details
 
     Returns:
         Initialized GrafanaMCPTool instance
@@ -250,7 +250,7 @@ if __name__ == "__main__":
 
     async def test():
         config = load_config()
-        tool = await create_grafana_tool(config.grafana)
+        tool = await create_grafana_tool(config)
         
         try:
             dashboards = await tool.list_dashboards()
