@@ -17,6 +17,7 @@ git clone https://github.com/guptaachin/metrics-observability-pipeline.git
 cd metrics-observability-pipeline && ./start-mop
 
 # 2. Run the agent
+git clone --branch v0.0.1 https://github.com/guptaachin/observability-agent.git
 cd observability-agent
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
