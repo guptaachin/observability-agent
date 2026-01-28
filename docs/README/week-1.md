@@ -1,4 +1,4 @@
-# Week 1 Deliverable: Grafana Dashboard Agent
+# Week 1: Simple Grafana Dashboard Agent
 
 **Goal**: Build a single-node LangGraph agent that interacts with Grafana via MCP to answer basic dashboard queries.
 
