@@ -106,26 +106,25 @@ src/
 
 ```mermaid
 flowchart LR
-    subgraph User
-        A[User Query]
-    end
+    A[User Query] --> B[OpenAI LLM]
+    B --> C{Intent}
+    C -->|SEARCH| D[MCP Client]
+    C -->|OUT_OF_SCOPE| E[Error]
+    D --> F[Grafana MCP Server]
+    F --> G[Grafana]
+    G --> F
+    F --> D
+    D --> H[Response]
+    E --> H
     
-    subgraph Agent["LangGraph Agent"]
-        B[Gradio UI] --> C[Agent Node]
-        C --> D{LLM Intent<br/>Extraction}
-        D -->|SEARCH: keywords| E[MCP Client]
-        D -->|OUT_OF_SCOPE| F[Error Response]
-    end
-    
-    subgraph External
-        E -->|SSE| G[Grafana MCP Server<br/>localhost:8001]
-        G --> H[Grafana<br/>localhost:3000]
-    end
-    
-    A --> B
-    E --> I[Format Response]
-    F --> I
-    I --> J[User Response]
+    style A fill:#2196f3,color:#fff
+    style B fill:#ff9800,color:#fff
+    style C fill:#ffc107,color:#000
+    style D fill:#9c27b0,color:#fff
+    style E fill:#f44336,color:#fff
+    style F fill:#4caf50,color:#fff
+    style G fill:#4caf50,color:#fff
+    style H fill:#2196f3,color:#fff
 ```
 
 **Flow:**
