@@ -96,11 +96,43 @@ Then open http://localhost:7860 in your browser.
 
 ```
 src/
-├── config.py    # Configuration (env vars) and LLM setup
-├── tools.py     # MCP client using SSE transport
-├── agent.py     # Single-node LangGraph agent
-└── main.py      # Gradio chat UI
+├── config.py      # Configuration (env vars) and LLM setup
+├── mcp_client.py  # MCP client using SSE transport
+├── agent.py       # Single-node LangGraph agent
+└── main.py        # Gradio chat UI
 ```
+
+### Data Flow
+
+```mermaid
+flowchart LR
+    subgraph User
+        A[User Query]
+    end
+    
+    subgraph Agent["LangGraph Agent"]
+        B[Gradio UI] --> C[Agent Node]
+        C --> D{LLM Intent<br/>Extraction}
+        D -->|SEARCH: keywords| E[MCP Client]
+        D -->|OUT_OF_SCOPE| F[Error Response]
+    end
+    
+    subgraph External
+        E -->|SSE| G[Grafana MCP Server<br/>localhost:8001]
+        G --> H[Grafana<br/>localhost:3000]
+    end
+    
+    A --> B
+    E --> I[Format Response]
+    F --> I
+    I --> J[User Response]
+```
+
+**Flow:**
+1. User enters natural language query in Gradio chat
+2. LLM extracts search intent (keywords or out-of-scope)
+3. MCP client queries Grafana via SSE transport
+4. Results are formatted and returned to user
 
 The agent uses an LLM to extract search intent from natural language, then queries Grafana via the MCP server.
 
