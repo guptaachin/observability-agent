@@ -91,7 +91,7 @@ Open http://localhost:7860
 
 ---
 
-## Out of Scope (Intentionally)
+## Future Scope
 
 - Metrics querying or visualization
 - Anomaly detection or analysis
