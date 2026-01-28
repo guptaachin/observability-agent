@@ -5,7 +5,7 @@ import logging
 import gradio as gr
 
 from config import load_config
-from tools import GrafanaMCP
+from mcp_client import GrafanaMCP
 from agent import create_agent
 
 

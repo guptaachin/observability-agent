@@ -6,7 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config import Config, create_llm
-from tools import GrafanaMCP, Dashboard
+from mcp_client import GrafanaMCP, Dashboard
 
 
 logger = logging.getLogger(__name__)
