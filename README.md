@@ -1,4 +1,4 @@
-# Grafana Dashboard Agent
+# Observability Agent
 
 A simple LangGraph agent that lets you query Grafana dashboards using natural language.
 
