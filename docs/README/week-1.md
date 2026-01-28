@@ -93,11 +93,11 @@ Open http://localhost:7860
 
 ## Out of Scope (Intentionally)
 
-- ❌ Metrics querying or visualization
-- ❌ Anomaly detection or analysis
-- ❌ Dashboard modification
-- ❌ Multi-turn conversation memory
-- ❌ Ollama support (OpenAI only)
+- Metrics querying or visualization
+- Anomaly detection or analysis
+- Dashboard modification
+- Multi-turn conversation memory
+- Ollama support (OpenAI only)
 
 ---
 
