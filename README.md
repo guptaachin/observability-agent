@@ -7,7 +7,7 @@ A learning project to build AI agents that interact with observability tools via
 | Week | Focus | Status | Docs |
 |------|-------|--------|------|
 | 1 | Grafana dashboard queries via MCP | ✅ Done | [week-1.md](https://github.com/guptaachin/observability-agent/blob/main/docs/README/week-1.md) |
-| 2 | Tool-calling, alerts, memory | 🔜 Planned | - |
+| 2 | Tool-calling agent with LangGraph Studio | ✅ Done | [week-2.md](https://github.com/guptaachin/observability-agent/blob/main/docs/README/week-2.md) |
 
 ## Quick Start
 
