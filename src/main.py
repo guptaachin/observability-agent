@@ -3,10 +3,11 @@
 import asyncio
 import logging
 import gradio as gr
+from langchain_core.messages import HumanMessage
 
-from config import load_config
-from mcp_client import GrafanaMCP
-from agent import create_agent
+from src.config import load_config
+from src.mcp_client import GrafanaMCP
+from src.agent import create_agent
 
 
 logging.basicConfig(level=logging.INFO)
@@ -18,8 +19,10 @@ def main():
     agent = create_agent(config, mcp)
     
     def chat(message: str, history: list) -> str:
-        result = asyncio.run(agent.ainvoke({"query": message}))
-        return result.get("response", "No response")
+        result = asyncio.run(
+            agent.ainvoke({"messages": [HumanMessage(content=message)]})
+        )
+        return result["messages"][-1].content
     
     gr.ChatInterface(
         fn=chat,

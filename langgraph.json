@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "src.agent:build_agent"
+  },
+  "env": ".env"
+}
