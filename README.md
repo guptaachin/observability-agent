@@ -22,10 +22,23 @@ cd observability-agent
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env  # Add OPENAI_API_KEY
+```
+
+### Gradio UI
+
+```bash
 python -m src.main
 ```
 
 Open http://localhost:7860
+
+### LangGraph Studio
+
+```bash
+langgraph dev
+```
+
+Opens an interactive UI to visualize the agent graph, inspect state, and test queries.
 
 ## Related
 
